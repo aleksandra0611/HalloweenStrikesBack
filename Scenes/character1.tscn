@@ -6,7 +6,14 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e0j01"]
 size = Vector2(63, 63)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_e0j01"]
+radius = 68.117546
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0j01"]
+bg_color = Color(1.025185e-05, 0.61180294, 0.12335376, 1)
+
 [node name="Chracter1" type="CharacterBody2D" unique_id=435556494]
+collision_layer = 2
 script = ExtResource("1_e0j01")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1704046381]
@@ -15,3 +22,19 @@ texture = ExtResource("1_rwu2g")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1507744022]
 position = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_e0j01")
+
+[node name="AttackRange" type="Area2D" parent="." unique_id=1203731157]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange" unique_id=632623505]
+shape = SubResource("CircleShape2D_e0j01")
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=1299888787]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -49.0
+offset_right = 33.0
+offset_bottom = -37.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_e0j01")
+show_percentage = false
