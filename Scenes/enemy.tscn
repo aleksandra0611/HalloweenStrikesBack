@@ -14,6 +14,7 @@ bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
 
 [node name="enemy" type="CharacterBody2D" unique_id=246681695]
 collision_layer = 4
+collision_mask = 5
 script = ExtResource("1_1f0kj")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1257363648]
@@ -25,7 +26,7 @@ shape = SubResource("RectangleShape2D_1f0kj")
 
 [node name="AttackRange" type="Area2D" parent="." unique_id=1315047935]
 collision_layer = 0
-collision_mask = 2
+collision_mask = 10
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange" unique_id=11460576]
 shape = SubResource("CircleShape2D_1f0kj")

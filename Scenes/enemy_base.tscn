@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://d1d4ndk8cssu5"]
+
+[ext_resource type="Script" uid="uid://b5jrh8ase64bu" path="res://Scripts/enemy_base.gd" id="1_cs1oe"]
+[ext_resource type="Texture2D" uid="uid://dp2pnv60vl3ve" path="res://Art/Sprite-0005.png" id="1_r040p"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cs1oe"]
+size = Vector2(31, 57)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jd0l4"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+
+[node name="EnemyBase" type="StaticBody2D" unique_id=1868263003]
+script = ExtResource("1_cs1oe")
+is_player_base = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=247468650]
+position = Vector2(-0.5, 2.5)
+shape = SubResource("RectangleShape2D_cs1oe")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=83948480]
+texture = ExtResource("1_r040p")
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=1243488450]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -49.0
+offset_right = 33.0
+offset_bottom = -37.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_jd0l4")
+show_percentage = false

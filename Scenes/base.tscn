@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://jw6xlnp58amy"]
+
+[ext_resource type="Script" uid="uid://birphghgl4q56" path="res://Scripts/base.gd" id="1_1w1q6"]
+[ext_resource type="Texture2D" uid="uid://dp2pnv60vl3ve" path="res://Art/Sprite-0005.png" id="2_6qyon"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jdayy"]
+size = Vector2(31, 57)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8nfiu"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+
+[node name="Base" type="StaticBody2D" unique_id=1173334977]
+script = ExtResource("1_1w1q6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=256755119]
+position = Vector2(-0.5, 2.5)
+shape = SubResource("RectangleShape2D_jdayy")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1691444589]
+texture = ExtResource("2_6qyon")
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=1766367796]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -49.0
+offset_right = 33.0
+offset_bottom = -37.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_8nfiu")
+show_percentage = false
