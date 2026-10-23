@@ -11,8 +11,13 @@ config_version=5
 [application]
 
 config/name="Halloween Strikes Back"
+run/main_scene="uid://dga75pr84msnl"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameMode="*uid://baobl7mlj3x7h"
 
 [physics]
 

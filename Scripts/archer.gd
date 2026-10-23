@@ -14,6 +14,7 @@ const GRAVITY := 900.0
 @export var siege_zone: float = 450.0
 @export var siege_min: float = 180.0
 @export var siege_max: float = 290.0
+@export var defend_back: float = 90.0   # archers wait this far behind the defend point
 
 var direction: int = 1
 var number_color: Color = Color.WHITE
@@ -26,6 +27,8 @@ var last_number_time: float = -1.0
 var enemy_base: Node2D = null
 var normal_mask: int = 0
 var siege_distance: float = 0.0
+var defending: bool = false
+var defend_x: float = 0.0
 
 @onready var attack_range: Area2D = $AttackRange
 @onready var health_bar: ProgressBar = $HealthBar
@@ -47,6 +50,8 @@ func _ready() -> void:
 		collision_layer = 1 << 4                    # layer 5: enemy archers
 		collision_mask = (1 << 0) | (1 << 4)        # ground + enemy archers
 		attack_range.collision_mask = (1 << 1) | (1 << 3)   # layers 2 and 4
+	if is_player:
+		add_to_group("player_army")
 	normal_mask = collision_mask
 	siege_distance = randf_range(siege_min, siege_max)
 	enemy_base = get_tree().get_first_node_in_group("enemy_base" if is_player else "player_base") as Node2D
@@ -71,6 +76,10 @@ func _physics_process(delta: float) -> void:
 		if shoot_timer <= 0.0:
 			shoot_timer = shoot_interval
 			_shoot(_nearest_target())
+	elif defending:
+		var dx := (defend_x - defend_back) - global_position.x
+		velocity.x = signf(dx) * speed if absf(dx) > 6.0 else 0.0
+		shoot_timer = shoot_interval
 	elif near_base and absf(base_dx) <= siege_distance:
 		velocity.x = 0.0
 		shoot_timer -= delta
@@ -133,3 +142,9 @@ func _on_body_entered(body: Node2D) -> void:
 
 func _on_body_exited(body: Node2D) -> void:
 	targets.erase(body)
+
+func set_stance(is_defending: bool, x: float) -> void:
+	if not is_player:
+		return
+	defending = is_defending
+	defend_x = x

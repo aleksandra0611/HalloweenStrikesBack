@@ -27,6 +27,7 @@ var spawn_progress: float = 0.0
 var income_timer: float = 0.0
 var elapsed: float = 0.0
 var kills: int = 0
+var defending: bool = false
 
 @onready var button: Button = $CanvasLayer/VBoxContainer/HBoxContainer/Button
 @onready var archer_button: Button = $CanvasLayer/VBoxContainer/HBoxContainer/ArcherButton
@@ -42,8 +43,12 @@ var kills: int = 0
 @onready var result_box: PanelContainer = $CanvasLayer/ResultBox
 @onready var result_label: Label = $CanvasLayer/ResultBox/VBoxContainer/ResultLabel
 @onready var restart_button: Button = $CanvasLayer/ResultBox/VBoxContainer/RestartButton
+@onready var attack_button: Button = %AttackButton
+@onready var defend_button: Button = %DefendButton
+@onready var defend_point: Marker2D = $DefendPoint
 
 func _ready() -> void:
+	$CanvasLayer/PauseButton.pressed.connect($PauseMenu._pause)
 	button.pressed.connect(func(): _queue_unit("warrior", WARRIOR_COST))
 	archer_button.pressed.connect(func(): _queue_unit("archer", ARCHER_COST))
 	enemy_timer.timeout.connect(_on_enemy_timer_timeout)
@@ -52,6 +57,16 @@ func _ready() -> void:
 	enemy_base.destroyed.connect(_on_enemy_base_destroyed)
 	spawn_bar.max_value = SPAWN_TIME
 	spawn_bar.value = 0.0
+
+	var stance_group := ButtonGroup.new()
+	attack_button.toggle_mode = true
+	defend_button.toggle_mode = true
+	attack_button.button_group = stance_group
+	defend_button.button_group = stance_group
+	attack_button.button_pressed = true
+	attack_button.pressed.connect(func(): _set_stance(false))
+	defend_button.pressed.connect(func(): _set_stance(true))
+
 	update_ui()
 	update_stats()
 
@@ -79,10 +94,12 @@ func _tick_queue(delta: float) -> void:
 		spawn_progress = 0.0
 		spawn_bar.value = 0.0
 		var type: String = queue.pop_front()
+		var unit: Node2D
 		if type == "archer":
-			_spawn_archer(true, spawn_point)
+			unit = _spawn_archer(true, spawn_point)
 		else:
-			_spawn_unit(character_scene, spawn_point)
+			unit = _spawn_unit(character_scene, spawn_point)
+		unit.set_stance(defending, defend_point.global_position.x)
 		update_ui()
 
 func _queue_unit(type: String, cost: int) -> void:
@@ -161,3 +178,7 @@ func end_game(won: bool) -> void:
 func _on_restart_pressed() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
+
+func _set_stance(is_defending: bool) -> void:
+	defending = is_defending
+	get_tree().call_group("player_army", "set_stance", defending, defend_point.global_position.x)

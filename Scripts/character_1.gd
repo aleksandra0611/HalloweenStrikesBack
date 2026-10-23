@@ -24,11 +24,14 @@ var last_number_time: float = -1.0
 var enemy_base: Node2D = null
 var normal_mask: int = 0
 var siege_distance: float = 0.0
+var defending: bool = false
+var defend_x: float = 0.0
 
 @onready var attack_range: Area2D = $AttackRange
 @onready var health_bar: ProgressBar = $HealthBar
 
 func _ready() -> void:
+	add_to_group("player_army")
 	health = max_health
 	health_bar.max_value = max_health
 	health_bar.value = health
@@ -48,17 +51,21 @@ func _physics_process(delta: float) -> void:
 	if is_instance_valid(enemy_base):
 		base_dx = enemy_base.global_position.x - global_position.x
 	var near_base := absf(base_dx) < siege_zone
-	collision_mask = 1 if near_base else normal_mask   # near the tower: walk through friends
+	collision_mask = 1 if near_base else normal_mask
 
 	if not targets.is_empty():
-		# fight enemy units first
+		# fight enemy units in range first
 		velocity.x = 0.0
 		attack_timer -= delta
 		if attack_timer <= 0.0:
 			attack_timer = attack_interval
 			targets[0].take_damage(damage)
+	elif defending:
+		# walk to the defend point (back or forward) and wait there
+		var dx := defend_x - global_position.x
+		velocity.x = signf(dx) * speed if absf(dx) > 6.0 else 0.0
+		attack_timer = attack_interval
 	elif near_base and absf(base_dx) <= siege_distance:
-		# in position: hit the tower
 		velocity.x = 0.0
 		attack_timer -= delta
 		if attack_timer <= 0.0:
@@ -67,8 +74,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = speed * direction
 		attack_timer = attack_interval
-
+	
 	move_and_slide()
+
 func take_damage(amount: int) -> void:
 	if is_dead:
 		return
@@ -99,3 +107,7 @@ func _on_body_entered(body: Node2D) -> void:
 func _on_body_exited(body: Node2D) -> void:
 	targets.erase(body)
 	move_and_slide()
+
+func set_stance(is_defending: bool, x: float) -> void:
+	defending = is_defending
+	defend_x = x

@@ -4,8 +4,9 @@
 [ext_resource type="Texture2D" uid="uid://d104s16p7ofgo" path="res://Art/Sprite-0002.png" id="1_a02cp"]
 [ext_resource type="Texture2D" uid="uid://cturqhfufoy01" path="res://Art/Sprite-0003.png" id="3_5a7ea"]
 [ext_resource type="PackedScene" uid="uid://d1d4ndk8cssu5" path="res://Scenes/enemy_base.tscn" id="4_5ukr8"]
-[ext_resource type="Script" path="res://Scripts/camera_2d.gd" id="4_8j60k"]
+[ext_resource type="Script" uid="uid://pmf611vyxwbx" path="res://Scripts/camera_2d.gd" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://jw6xlnp58amy" path="res://Scenes/base.tscn" id="5_fo5ed"]
+[ext_resource type="Script" uid="uid://cdhb170u57uyt" path="res://Scripts/pause_menu.gd" id="7_o06y3"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_go701"]
 texture = ExtResource("1_a02cp")
@@ -75,8 +76,10 @@ autostart = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -200.0
-offset_bottom = 50.0
+offset_left = -367.0
+offset_top = 63.0
+offset_right = -3.0
+offset_bottom = 200.0
 grow_horizontal = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/VBoxContainer" unique_id=712566196]
@@ -101,10 +104,28 @@ show_percentage = false
 [node name="QueueLabel" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=1336045352]
 layout_mode = 2
 
+[node name="StanceRow" type="HBoxContainer" parent="CanvasLayer/VBoxContainer" unique_id=399280597]
+layout_mode = 2
+alignment = 1
+
+[node name="AttackButton" type="Button" parent="CanvasLayer/VBoxContainer/StanceRow" unique_id=1617031554]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 40)
+layout_mode = 2
+text = "Attack"
+
+[node name="DefendButton" type="Button" parent="CanvasLayer/VBoxContainer/StanceRow" unique_id=1304152477]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 40)
+layout_mode = 2
+text = "Defend"
+
 [node name="Money" type="PanelContainer" parent="CanvasLayer" unique_id=1782495167]
 custom_minimum_size = Vector2(160, 50)
-offset_right = 160.0
-offset_bottom = 50.0
+offset_left = 61.0
+offset_top = 3.0
+offset_right = 221.0
+offset_bottom = 53.0
 
 [node name="MoneyLabel" type="Label" parent="CanvasLayer/Money" unique_id=222293160]
 layout_mode = 2
@@ -155,11 +176,19 @@ theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 
+[node name="PauseButton" type="Button" parent="CanvasLayer" unique_id=1566146826]
+custom_minimum_size = Vector2(50, 50)
+offset_left = 4.0
+offset_top = 3.0
+offset_right = 54.0
+offset_bottom = 54.0
+text = "I I"
+
 [node name="SpawnPoint" type="Marker2D" parent="." unique_id=638142431]
-position = Vector2(226, 561)
+position = Vector2(142, 560)
 
 [node name="SpawnPoint_enemies" type="Marker2D" parent="." unique_id=1971017238]
-position = Vector2(1531, 575)
+position = Vector2(1548, 562)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1005092277]
 position = Vector2(575, 324)
@@ -174,3 +203,75 @@ position = Vector2(73, 559)
 
 [node name="EnemyBase" parent="." unique_id=1868263003 instance=ExtResource("4_5ukr8")]
 position = Vector2(1686, 574)
+
+[node name="DefendPoint" type="Marker2D" parent="." unique_id=2062209208]
+position = Vector2(302, 555)
+
+[node name="PauseMenu" type="CanvasLayer" parent="." unique_id=141516313]
+process_mode = 3
+layer = 10
+script = ExtResource("7_o06y3")
+
+[node name="ColorRect" type="ColorRect" parent="PauseMenu" unique_id=84483366]
+custom_minimum_size = Vector2(500, 400)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -30.0
+offset_top = -31.0
+offset_right = 30.0
+offset_bottom = 31.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.14509805, 0.14509805, 0.15294118, 0.83137256)
+
+[node name="CenterContainer" type="CenterContainer" parent="PauseMenu" unique_id=1371578417]
+custom_minimum_size = Vector2(500, 400)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -200.0
+offset_right = 250.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseMenu/CenterContainer" unique_id=1970686480]
+custom_minimum_size = Vector2(450, 300)
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1379967272]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1799959921]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Resume"
+
+[node name="RestartButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=376844094]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Restart"
+
+[node name="MenuButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1405255684]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Main Menu"
+
+[node name="QuitButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1412492680]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Quit"
