@@ -6,6 +6,9 @@
 font_size = 64
 font_color = Color(0, 0, 0, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_28flt"]
+bg_color = Color(0.8606249, 0.4976129, 0.10212881, 1)
+
 [node name="MainMenu" type="Control" unique_id=463141591]
 layout_mode = 3
 anchors_preset = 15
@@ -70,37 +73,92 @@ text = "Quit"
 
 [node name="SettingsPanel" type="PanelContainer" parent="." unique_id=1692246060]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(450, 400)
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -62.0
+offset_top = -85.5
+offset_right = 62.0
+offset_bottom = 85.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel" unique_id=1383089414]
+[node name="MarginContainer" type="MarginContainer" parent="SettingsPanel" unique_id=548031586]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel/MarginContainer" unique_id=1383089414]
+layout_mode = 2
+theme_override_constants/separation = 14
 alignment = 1
 
-[node name="SettingsLabel" type="Label" parent="SettingsPanel/VBoxContainer" unique_id=257671800]
+[node name="SettingsLabel" type="Label" parent="SettingsPanel/MarginContainer/VBoxContainer" unique_id=257671800]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Settings"
 horizontal_alignment = 1
 
-[node name="VolumeSlider" type="HSlider" parent="SettingsPanel/VBoxContainer" unique_id=2135262031]
+[node name="HSeparator" type="HSeparator" parent="SettingsPanel/MarginContainer/VBoxContainer" unique_id=1480193819]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_28flt")
+
+[node name="GridContainer" type="GridContainer" parent="SettingsPanel/MarginContainer/VBoxContainer" unique_id=188880743]
+layout_mode = 2
+theme_override_constants/h_separation = 32
+columns = 2
+
+[node name="MasterLabel" type="Label" parent="SettingsPanel/MarginContainer/VBoxContainer/GridContainer" unique_id=1772844272]
+layout_mode = 2
+text = "Master"
+
+[node name="MasterSlider" type="HSlider" parent="SettingsPanel/MarginContainer/VBoxContainer/GridContainer" unique_id=2135262031]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="MusicLabel" type="Label" parent="SettingsPanel/MarginContainer/VBoxContainer/GridContainer" unique_id=1855370419]
+layout_mode = 2
+text = "Music"
+
+[node name="MusicSlider" type="HSlider" parent="SettingsPanel/MarginContainer/VBoxContainer/GridContainer" unique_id=643637687]
 unique_name_in_owner = true
 layout_mode = 2
 max_value = 1.0
-step = 0.5
+step = 0.05
 value = 1.0
 
-[node name="FullscreenCheck" type="CheckBox" parent="SettingsPanel/VBoxContainer" unique_id=944994487]
+[node name="SfxLabel" type="Label" parent="SettingsPanel/MarginContainer/VBoxContainer/GridContainer" unique_id=1339170414]
+layout_mode = 2
+text = "Sound effects"
+
+[node name="SfxSlider" type="HSlider" parent="SettingsPanel/MarginContainer/VBoxContainer/GridContainer" unique_id=2086342509]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="FullscreenCheck" type="CheckBox" parent="SettingsPanel/MarginContainer/VBoxContainer" unique_id=944994487]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Fullscreen"
 
-[node name="BackButton" type="Button" parent="SettingsPanel/VBoxContainer" unique_id=864036379]
+[node name="DamageNumbersCheck" type="CheckBox" parent="SettingsPanel/MarginContainer/VBoxContainer" unique_id=199004097]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Show damage numbers"
+
+[node name="BackButton" type="Button" parent="SettingsPanel/MarginContainer/VBoxContainer" unique_id=864036379]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Back"

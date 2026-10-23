@@ -89,6 +89,8 @@ func take_damage(amount: int) -> void:
 		queue_free()
 		
 func _show_damage(amount: int) -> void:
+	if not GameSettings.show_damage_numbers:
+		return
 	var now := Time.get_ticks_msec() / 1000.0
 	if is_instance_valid(last_number) and now - last_number_time < 0.3:
 		last_number.add(amount)

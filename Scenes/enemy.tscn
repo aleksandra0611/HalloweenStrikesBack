@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://8mmdvqfvcse0"]
 
-[ext_resource type="Script" uid="uid://cj1elaf63p6fu" path="res://Scripts/enemy.gd" id="1_1f0kj"]
+[ext_resource type="Script" uid="uid://cvfvfkav08osv" path="res://Scripts/unit.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://bxo7iiptodwhe" path="res://Art/Sprite-0004.png" id="1_hghv2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
@@ -16,6 +16,8 @@ bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
 collision_layer = 4
 collision_mask = 5
 script = ExtResource("1_1f0kj")
+is_player = false
+damage = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1257363648]
 texture = ExtResource("1_hghv2")

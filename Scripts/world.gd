@@ -48,7 +48,7 @@ var defending: bool = false
 @onready var defend_point: Marker2D = $DefendPoint
 
 func _ready() -> void:
-	$CanvasLayer/PauseButton.pressed.connect($PauseMenu._pause)
+	$CanvasLayer/PauseButton.pressed.connect($PauseMenu.toggle)
 	button.pressed.connect(func(): _queue_unit("warrior", WARRIOR_COST))
 	archer_button.pressed.connect(func(): _queue_unit("archer", ARCHER_COST))
 	enemy_timer.timeout.connect(_on_enemy_timer_timeout)
@@ -96,9 +96,9 @@ func _tick_queue(delta: float) -> void:
 		var type: String = queue.pop_front()
 		var unit: Node2D
 		if type == "archer":
-			unit = _spawn_archer(true, spawn_point)
+			unit = _spawn(archer_scene, true, spawn_point)
 		else:
-			unit = _spawn_unit(character_scene, spawn_point)
+			unit = _spawn(character_scene, true, spawn_point)
 		unit.set_stance(defending, defend_point.global_position.x)
 		update_ui()
 
@@ -109,15 +109,9 @@ func _queue_unit(type: String, cost: int) -> void:
 	queue.append(type)
 	update_ui()
 
-func _spawn_unit(scene: PackedScene, marker: Marker2D) -> Node2D:
+func _spawn(scene: PackedScene, is_player: bool, marker: Marker2D) -> Node2D:
 	var unit = scene.instantiate()
-	unit.global_position = marker.global_position
-	add_child(unit)
-	return unit
-
-func _spawn_archer(is_player: bool, marker: Marker2D) -> Node2D:
-	var unit = archer_scene.instantiate()
-	unit.is_player = is_player
+	unit.is_player = is_player   
 	unit.global_position = marker.global_position
 	add_child(unit)
 	return unit
@@ -127,9 +121,9 @@ func _on_enemy_timer_timeout() -> void:
 		return
 	var enemy: Node2D
 	if randf() < ENEMY_ARCHER_CHANCE:
-		enemy = _spawn_archer(false, enemy_spawn_point)
+		enemy = _spawn(archer_scene, false, enemy_spawn_point)
 	else:
-		enemy = _spawn_unit(enemy_scene, enemy_spawn_point)
+		enemy = _spawn(enemy_scene, false, enemy_spawn_point)
 	enemy.died.connect(_on_enemy_died)
 
 func _on_enemy_died() -> void:

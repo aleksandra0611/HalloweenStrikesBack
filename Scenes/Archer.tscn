@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://4bn65taycbho"]
 
-[ext_resource type="Script" uid="uid://cyg6sjoqmrbwf" path="res://Scripts/archer.gd" id="1_isiiq"]
+[ext_resource type="Script" uid="uid://cvfvfkav08osv" path="res://Scripts/unit.gd" id="1_isiiq"]
 [ext_resource type="Texture2D" uid="uid://rbnppmvy0r4c" path="res://Art/Sprite-0007.png" id="2_of14v"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e0j01"]
@@ -16,6 +16,14 @@ bg_color = Color(1.025185e-05, 0.61180294, 0.12335376, 1)
 collision_layer = 2
 collision_mask = 3
 script = ExtResource("1_isiiq")
+is_ranged = true
+max_health = 2
+damage = 1
+attack_interval = 0.5
+siege_zone = 450.0
+siege_min = 180.0
+siege_max = 290.0
+defend_back = 90.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1704046381]
 texture = ExtResource("2_of14v")

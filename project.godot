@@ -15,9 +15,18 @@ run/main_scene="uid://dga75pr84msnl"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://b6t3dpi4aytpm"
+
 [autoload]
 
 GameMode="*uid://baobl7mlj3x7h"
+GameSettings="*uid://dsx60ruqtsdog"
+
+[display]
+
+window/stretch/mode="canvas_items"
 
 [physics]
 

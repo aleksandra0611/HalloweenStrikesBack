@@ -177,6 +177,7 @@ theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 
 [node name="PauseButton" type="Button" parent="CanvasLayer" unique_id=1566146826]
+process_mode = 3
 custom_minimum_size = Vector2(50, 50)
 offset_left = 4.0
 offset_top = 3.0
@@ -225,6 +226,7 @@ offset_right = 30.0
 offset_bottom = 31.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 color = Color(0.14509805, 0.14509805, 0.15294118, 0.83137256)
 
 [node name="CenterContainer" type="CenterContainer" parent="PauseMenu" unique_id=1371578417]

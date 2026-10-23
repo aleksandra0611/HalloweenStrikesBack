@@ -14,14 +14,17 @@ func _ready() -> void:
 	quit_button.pressed.connect(func(): get_tree().quit())
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):   # Esc by default
-		if get_parent().game_over:             # don't open over the win/lose screen
-			return
-		if visible:
-			_resume()
-		else:
-			_pause()
+	if event.is_action_pressed("ui_cancel"):
+		toggle()
 		get_viewport().set_input_as_handled()
+
+func toggle() -> void:
+	if get_parent().game_over:
+		return
+	if visible:
+		_resume()
+	else:
+		_pause()
 
 func _pause() -> void:
 	visible = true
