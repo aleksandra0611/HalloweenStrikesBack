@@ -5,7 +5,7 @@ extends Node2D
 # "train_time" is optional (seconds in the queue, default is DEFAULT_TRAIN_TIME).
 # Costs, times and scene paths below are placeholders: set them to your own.
 const PLAYER_UNITS := {
-	"warrior":  {"name": "Warrior",  "cost": 2, "scene": preload("res://Scenes/character1.tscn")},
+	"pumpkin":  {"name": "Jack",  "cost": 2, "scene": preload("res://Scenes/pumpkin.tscn")},
 	"archer":   {"name": "Archer",   "cost": 3, "scene": preload("res://Scenes/archer.tscn")},
 	"skeleton": {"name": "Skeleton", "cost": 3, "scene": preload("res://Scenes/skeleton.tscn")},
 	"bat":      {"name": "Bat",      "cost": 2, "scene": preload("res://Scenes/bat.tscn"), "train_time": 1.5},
@@ -23,14 +23,14 @@ const ENEMY_UNITS := [
 const StoryDialogue = preload("res://Scripts/story_dialogue.gd")
 
 const INTRO_PART_1 := [
-	{"speaker": "Jack", "text": "Look at that... Christmas has crept over the border. Snow, tinsel and carols, in OUR October!"},
-	{"speaker": "Jack", "text": "Every year they steal a little more of the calendar. First it was November. Now they want it all."},
+	{"speaker": "Jack", "text": "Look at that... Christmas has crept over the border. Snow, tinsel and carols, in OUR October!", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Every year they steal a little more of the calendar. First it was November. Now they want it all.", "portrait":"res://Art/jack.png" },
 ]
 const INTRO_PART_2 := [
-	{"speaker": "Jack", "text": "Enough is enough. It's time Halloween struck back!"},
-	{"speaker": "Jack", "text": "Train warriors, skeletons, bats and ghosts. Gold is tight, so spend it wisely."},
-	{"speaker": "Jack", "text": "Use Attack to push forward and Defend to hold the line. Scroll the map with A and D."},
-	{"speaker": "Jack", "text": "Smash their base and Christmas will think twice before showing up early again. Go, my minions!"},
+	{"speaker": "Jack", "text": "Enough is enough. It's time Halloween struck back!", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Train warriors, skeletons, bats and ghosts. Gold is tight, so spend it wisely.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Use Attack to push forward and Defend to hold the line. Scroll the map with A and D.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Smash their base and Christmas will think twice before showing up early again. Go, my minions!", "portrait":"res://Art/jack.png" },
 ]
 
 # ENEMY AI
@@ -426,7 +426,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			queue_redraw()
 		KEY_F2:   # spawn 5 of your warriors just outside the enemy base range
 			for i in 5:
-				var u := _spawn(PLAYER_UNITS["warrior"]["scene"], true, spawn_point)
+				var u := _spawn(PLAYER_UNITS["pumpkin"]["scene"], true, spawn_point)
 				u.global_position = Vector2(enemy_base.global_position.x - AI_THREAT_RANGE + 100 - i * 30, spawn_point.global_position.y)
 		KEY_F3:   # +20 gold
 			money += 20

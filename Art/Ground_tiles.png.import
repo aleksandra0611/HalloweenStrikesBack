@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dp2pnv60vl3ve"
-path="res://.godot/imported/Sprite-0005.png-52526af2d4553075862cf2ea1938d298.ctex"
+uid="uid://7h1w7l2evueg"
+path="res://.godot/imported/Ground_tiles.png-e3686c50e9b669d62ec1288428f4156e.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Sprite-0005.png"
-dest_files=["res://.godot/imported/Sprite-0005.png-52526af2d4553075862cf2ea1938d298.ctex"]
+source_file="res://Art/Ground_tiles.png"
+dest_files=["res://.godot/imported/Ground_tiles.png-e3686c50e9b669d62ec1288428f4156e.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d104s16p7ofgo"
-path="res://.godot/imported/Sprite-0002.png-b2a81cec9a182fbff3d7ed90bd0dfd3c.ctex"
+uid="uid://dxojgg11a10lb"
+path="res://.godot/imported/Far_backround.png-48c9281f335afa1e8f27f64f387c8513.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Sprite-0002.png"
-dest_files=["res://.godot/imported/Sprite-0002.png-b2a81cec9a182fbff3d7ed90bd0dfd3c.ctex"]
+source_file="res://Art/Far_backround.png"
+dest_files=["res://.godot/imported/Far_backround.png-48c9281f335afa1e8f27f64f387c8513.ctex"]
 
 [params]
 

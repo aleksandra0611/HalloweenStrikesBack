@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bxo7iiptodwhe"
-path="res://.godot/imported/Sprite-0004.png-3990e11d9958fa8becc1963511e91ace.ctex"
+uid="uid://bgrf7rrddi7ys"
+path="res://.godot/imported/pumpkin_idle.png-da9b79d107adc4ec7e89d4b606c858d1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Art/Sprite-0004.png"
-dest_files=["res://.godot/imported/Sprite-0004.png-3990e11d9958fa8becc1963511e91ace.ctex"]
+source_file="res://Art/pumpkin_idle.png"
+dest_files=["res://.godot/imported/pumpkin_idle.png-da9b79d107adc4ec7e89d4b606c858d1.ctex"]
 
 [params]
 
