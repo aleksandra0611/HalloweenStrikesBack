@@ -1,0 +1,88 @@
+[gd_scene format=3 uid="uid://3v0fbam6inep"]
+
+[ext_resource type="Script" uid="uid://cvfvfkav08osv" path="res://Scripts/unit.gd" id="1_50dnf"]
+[ext_resource type="Texture2D" uid="uid://qbsdibexlnn3" path="res://Art/Bat1.png" id="2_cawgt"]
+[ext_resource type="Texture2D" uid="uid://dupisyetmou18" path="res://Art/Bat2.png" id="3_fk7gk"]
+[ext_resource type="Texture2D" uid="uid://d2owd3o6jeuex" path="res://Art/Bat3.png" id="4_c4xfn"]
+[ext_resource type="Texture2D" uid="uid://btbdtaho1n21o" path="res://Art/Bat4.png" id="5_h8o1q"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
+size = Vector2(63, 63)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
+radius = 82.006096
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2fv5y"]
+atlas = ExtResource("2_cawgt")
+region = Rect2(0, 0, 44, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oyxrr"]
+atlas = ExtResource("3_fk7gk")
+region = Rect2(0, 0, 44, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vophv"]
+atlas = ExtResource("4_c4xfn")
+region = Rect2(0, 0, 44, 44)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2o1ra"]
+atlas = ExtResource("5_h8o1q")
+region = Rect2(0, 0, 44, 44)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8cim4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2fv5y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oyxrr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vophv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2o1ra")
+}],
+"loop": true,
+"name": &"run",
+"speed": 9.0
+}]
+
+[node name="bat" type="CharacterBody2D" unique_id=246681695]
+collision_layer = 4
+collision_mask = 5
+script = ExtResource("1_50dnf")
+is_player = false
+damage = 1
+sprite_faces_right = false
+hit_frame = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1282862807]
+position = Vector2(-0.5, -0.5)
+shape = SubResource("RectangleShape2D_1f0kj")
+
+[node name="AttackRange" type="Area2D" parent="." unique_id=1315047935]
+collision_layer = 0
+collision_mask = 10
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange" unique_id=11460576]
+shape = SubResource("CircleShape2D_1f0kj")
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=317793147]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -49.0
+offset_right = 33.0
+offset_bottom = -37.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_1f0kj")
+show_percentage = false
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=590899447]
+position = Vector2(0, -2)
+scale = Vector2(1.9590323, 2.0695395)
+sprite_frames = SubResource("SpriteFrames_8cim4")
+animation = &"run"
+frame_progress = 0.72750205

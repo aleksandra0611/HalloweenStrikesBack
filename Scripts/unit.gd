@@ -6,9 +6,9 @@ const DamageNumber = preload("res://Scripts/damage_number.gd")
 const ARROW_SCENE: PackedScene = preload("res://Scenes/arrow.tscn")
 const GRAVITY := 900.0
 
-# physics layers 
+# physics layers (layer 1 = bit 0)
 const LAYER_GROUND := 1 << 0          # layer 1
-const LAYER_PLAYER_MELEE := 1 << 1    # layer 2 (also our base)
+const LAYER_PLAYER_MELEE := 1 << 1    # layer 2 (also your base)
 const LAYER_ENEMY_MELEE := 1 << 2     # layer 3 (also the enemy base)
 const LAYER_PLAYER_RANGED := 1 << 3   # layer 4
 const LAYER_ENEMY_RANGED := 1 << 4    # layer 5
@@ -24,7 +24,14 @@ const LAYER_ENEMY_RANGED := 1 << 4    # layer 5
 @export var siege_max: float = 120.0
 @export var defend_back: float = 0.0    # wait this far behind the defend point (archers use this)
 
+@export_group("Animation")
+@export var sprite_faces_right: bool = true   # untick if your art faces LEFT by default
+@export var hit_frame: int = 2                # attack frame (starting at 0) where the hit lands
+@export var head_offset: float = 70.0         # height above the feet where damage numbers appear
+@export var arrow_offset: Vector2 = Vector2(20, 0)   # where arrows spawn, relative to the unit
+
 var direction: int = 1
+var facing: int = 1
 var number_color: Color = Color.WHITE
 var health: int
 var targets: Array = []
@@ -38,8 +45,13 @@ var siege_distance: float = 0.0
 var defending: bool = false
 var defend_x: float = 0.0
 
+var attacking: bool = false
+var attack_hit_done: bool = false
+var attack_target: Node2D = null
+
 @onready var attack_range: Area2D = $AttackRange
 @onready var health_bar: ProgressBar = $HealthBar
+@onready var sprite: AnimatedSprite2D = get_node_or_null("AnimatedSprite2D")
 
 func _ready() -> void:
 	health = max_health
@@ -50,6 +62,12 @@ func _ready() -> void:
 	enemy_base = get_tree().get_first_node_in_group("enemy_base" if is_player else "player_base") as Node2D
 	attack_range.body_entered.connect(_on_body_entered)
 	attack_range.body_exited.connect(_on_body_exited)
+	facing = direction
+	if sprite:
+		sprite.frame_changed.connect(_on_sprite_frame_changed)
+		sprite.animation_finished.connect(_on_sprite_animation_finished)
+		_apply_facing()
+		_play("idle")
 
 func _setup_side() -> void:
 	attack_range.collision_layer = 0
@@ -100,13 +118,62 @@ func _physics_process(delta: float) -> void:
 		velocity.x = speed * direction
 		attack_timer = attack_interval
 
+	if attacking:
+		velocity.x = 0.0   # stand still during the attack animation
+
 	move_and_slide()
+	_update_animation()
+
+# ---------- attacking ----------
 
 func _try_attack(delta: float, target: Node2D) -> void:
+	if attacking:
+		return
 	attack_timer -= delta
 	if attack_timer > 0.0:
 		return
 	attack_timer = attack_interval
+	_start_attack(target)
+
+func _start_attack(target: Node2D) -> void:
+	if target == null:
+		return
+	# no sprite or no "attack" animation: hit instantly
+	if sprite == null or sprite.sprite_frames == null or not sprite.sprite_frames.has_animation("attack"):
+		_do_attack(target)
+		return
+	attacking = true
+	attack_hit_done = false
+	attack_target = target
+	var dx := target.global_position.x - global_position.x
+	if absf(dx) > 1.0:
+		facing = 1 if dx > 0.0 else -1
+		_apply_facing()
+	sprite.play("attack")
+
+func _on_sprite_frame_changed() -> void:
+	if not attacking or attack_hit_done or sprite.animation != "attack":
+		return
+	var last_frame := sprite.sprite_frames.get_frame_count("attack") - 1
+	if sprite.frame >= mini(hit_frame, last_frame):
+		_finish_hit()
+
+func _on_sprite_animation_finished() -> void:
+	if sprite.animation != "attack":
+		return
+	if not attack_hit_done:
+		_finish_hit()   # safety: never skip the damage
+	attacking = false
+	attack_target = null
+
+func _finish_hit() -> void:
+	attack_hit_done = true
+	if is_instance_valid(attack_target):
+		_do_attack(attack_target)
+
+func _do_attack(target: Node2D) -> void:
+	if not is_instance_valid(target):
+		return
 	if is_ranged:
 		_shoot(target)
 	else:
@@ -123,15 +190,38 @@ func _nearest_target() -> Node2D:
 	return best
 
 func _shoot(target: Node2D) -> void:
-	if target == null:
-		return
 	var dir: Vector2 = target.global_position - global_position
 	if dir.length() < 1.0:
 		dir = Vector2(direction, 0)
 	var arrow = ARROW_SCENE.instantiate()
 	arrow.setup(dir, damage, attack_range.collision_mask)
 	get_tree().current_scene.add_child(arrow)
-	arrow.global_position = global_position + Vector2(20 * direction, 0)
+	arrow.global_position = global_position + Vector2(arrow_offset.x * facing, arrow_offset.y)
+
+# ---------- animation ----------
+
+func _update_animation() -> void:
+	if sprite == null or attacking:
+		return
+	if absf(velocity.x) > 1.0:
+		var new_facing := 1 if velocity.x > 0.0 else -1
+		if new_facing != facing:
+			facing = new_facing
+			_apply_facing()
+		_play("run")
+	else:
+		_play("idle")
+
+func _play(anim: String) -> void:
+	if sprite.sprite_frames == null or not sprite.sprite_frames.has_animation(anim):
+		return
+	if sprite.animation != anim or not sprite.is_playing():
+		sprite.play(anim)
+
+func _apply_facing() -> void:
+	sprite.flip_h = (facing < 0) if sprite_faces_right else (facing > 0)
+
+# ---------- health ----------
 
 func take_damage(amount: int) -> void:
 	if is_dead:
@@ -152,7 +242,7 @@ func _show_damage(amount: int) -> void:
 		last_number.add(amount)
 		return
 	var n := DamageNumber.new()
-	n.setup(amount, number_color, global_position + Vector2(-8, -70))
+	n.setup(amount, number_color, global_position + Vector2(-8, -head_offset))
 	get_tree().current_scene.add_child(n)
 	last_number = n
 	last_number_time = now
