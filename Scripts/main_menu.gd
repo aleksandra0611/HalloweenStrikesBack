@@ -46,6 +46,8 @@ func _close_settings() -> void:
 	menu_container.visible = true
 
 func _start_story() -> void:
+	GameMode.endless = false
+	GameMode.intro_seen = false
 	get_tree().change_scene_to_file(WORLD_SCENE)
 
 func _on_volume_changed(value: float) -> void:

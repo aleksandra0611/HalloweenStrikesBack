@@ -2,13 +2,14 @@
 
 [ext_resource type="Script" uid="uid://cvfvfkav08osv" path="res://Scripts/unit.gd" id="1_uo00j"]
 [ext_resource type="Texture2D" uid="uid://dmnsqo457k6fa" path="res://Art/SnowManIdle.png" id="2_i1e4d"]
+[ext_resource type="PackedScene" uid="uid://bdp5e0r21n1d0" path="res://Scenes/snowball.tscn" id="2_l5jrg"]
 [ext_resource type="Texture2D" uid="uid://derqi13lxsbk4" path="res://Art/SnowManRun.png" id="3_l5jrg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
 size = Vector2(63, 63)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
-radius = 82.006096
+radius = 257.01752
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
 bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
@@ -87,7 +88,14 @@ collision_layer = 4
 collision_mask = 5
 script = ExtResource("1_uo00j")
 is_player = false
+is_ranged = true
 damage = 1
+attack_interval = 0.7
+siege_zone = 450.0
+siege_min = 180.0
+siege_max = 290.0
+defend_back = 80.0
+projectile_scene = ExtResource("2_l5jrg")
 sprite_faces_right = false
 hit_frame = 3
 

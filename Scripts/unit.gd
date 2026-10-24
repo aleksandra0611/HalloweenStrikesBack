@@ -3,7 +3,6 @@ extends CharacterBody2D
 signal died
 
 const DamageNumber = preload("res://Scripts/damage_number.gd")
-const ARROW_SCENE: PackedScene = preload("res://Scenes/arrow.tscn")
 const GRAVITY := 900.0
 
 # physics layers (layer 1 = bit 0)
@@ -23,6 +22,7 @@ const LAYER_ENEMY_RANGED := 1 << 4    # layer 5
 @export var siege_min: float = 55.0     # random stop distance from the base's centre
 @export var siege_max: float = 120.0
 @export var defend_back: float = 0.0    # wait this far behind the defend point (archers use this)
+@export var projectile_scene: PackedScene = preload("res://Scenes/arrow.tscn")
 
 @export_group("Animation")
 @export var sprite_faces_right: bool = true   # untick if your art faces LEFT by default
@@ -84,6 +84,7 @@ func _setup_side() -> void:
 		number_color = Color.RED
 		own_layer = LAYER_ENEMY_RANGED if is_ranged else LAYER_ENEMY_MELEE
 		enemy_layers = LAYER_PLAYER_MELEE | LAYER_PLAYER_RANGED
+		add_to_group("enemy_army")
 	collision_layer = own_layer
 	collision_mask = LAYER_GROUND | own_layer   # ground + units of the same kind
 	attack_range.collision_mask = enemy_layers
@@ -99,7 +100,7 @@ func _physics_process(delta: float) -> void:
 	if is_instance_valid(enemy_base):
 		base_dx = enemy_base.global_position.x - global_position.x
 	var near_base := absf(base_dx) < siege_zone
-	collision_mask = LAYER_GROUND if near_base else normal_mask   # near the base: walk through friends
+	collision_mask = LAYER_GROUND if (near_base or defending) else normal_mask  
 
 	if not targets.is_empty():
 		# fight units in range first
@@ -107,7 +108,7 @@ func _physics_process(delta: float) -> void:
 		_try_attack(delta, _nearest_target())
 	elif defending:
 		# walk to the defend point and wait there
-		var dx := (defend_x - defend_back) - global_position.x
+		var dx := (defend_x - defend_back * direction) - global_position.x
 		velocity.x = signf(dx) * speed if absf(dx) > 6.0 else 0.0
 		attack_timer = attack_interval
 	elif near_base and absf(base_dx) <= siege_distance:
@@ -193,10 +194,10 @@ func _shoot(target: Node2D) -> void:
 	var dir: Vector2 = target.global_position - global_position
 	if dir.length() < 1.0:
 		dir = Vector2(direction, 0)
-	var arrow = ARROW_SCENE.instantiate()
-	arrow.setup(dir, damage, attack_range.collision_mask)
-	get_tree().current_scene.add_child(arrow)
-	arrow.global_position = global_position + Vector2(arrow_offset.x * facing, arrow_offset.y)
+	var projectile = projectile_scene.instantiate()
+	projectile.setup(dir, damage, attack_range.collision_mask)
+	get_tree().current_scene.add_child(projectile)
+	projectile.global_position = global_position + Vector2(arrow_offset.x * facing, arrow_offset.y)
 
 # ---------- animation ----------
 
@@ -210,6 +211,14 @@ func _update_animation() -> void:
 			_apply_facing()
 		_play("run")
 	else:
+		var look := direction
+		if not targets.is_empty():
+			var t := _nearest_target()
+			if t != null and absf(t.global_position.x - global_position.x) > 1.0:
+				look = 1 if t.global_position.x > global_position.x else -1
+		if look != facing:
+			facing = look
+			_apply_facing()
 		_play("idle")
 
 func _play(anim: String) -> void:
@@ -256,7 +265,5 @@ func _on_body_exited(body: Node2D) -> void:
 	targets.erase(body)
 
 func set_stance(is_defending: bool, x: float) -> void:
-	if not is_player:
-		return
 	defending = is_defending
 	defend_x = x

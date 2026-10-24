@@ -163,7 +163,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"attack",
-"speed": 10.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -244,9 +244,9 @@ shape = SubResource("CircleShape2D_1f0kj")
 [node name="HealthBar" type="ProgressBar" parent="." unique_id=317793147]
 custom_minimum_size = Vector2(40, 6)
 offset_left = -33.0
-offset_top = -49.0
+offset_top = -65.0
 offset_right = 33.0
-offset_bottom = -37.0
+offset_bottom = -53.0
 theme_override_styles/fill = SubResource("StyleBoxFlat_1f0kj")
 show_percentage = false
 

@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bdp5e0r21n1d0"]
+
+[ext_resource type="Script" uid="uid://bay5oi4c2a08c" path="res://Scripts/arrow.gd" id="1_ispdo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2u0bd"]
+size = Vector2(6, 6)
+
+[node name="Arrow" type="Area2D" unique_id=1627774859]
+script = ExtResource("1_ispdo")
+speed = 400.0
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=418365305]
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 3.0
+offset_bottom = 3.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1082462174]
+shape = SubResource("RectangleShape2D_2u0bd")
