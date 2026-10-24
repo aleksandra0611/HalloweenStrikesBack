@@ -12,6 +12,12 @@ const LAYER_ENEMY_MELEE := 1 << 2     # layer 3 (also the enemy base)
 const LAYER_PLAYER_RANGED := 1 << 3   # layer 4
 const LAYER_ENEMY_RANGED := 1 << 4    # layer 5
 
+const PUNCH_SOUNDS := [
+	preload("res://Audio/punch1.mp3"),
+	preload("res://Audio/punch2.mp3"),
+	preload("res://Audio/punch3.mp3"),
+]
+
 @export var is_player: bool = true
 @export var is_ranged: bool = false
 @export var speed: float = 100.0
@@ -29,6 +35,8 @@ const LAYER_ENEMY_RANGED := 1 << 4    # layer 5
 @export var hit_frame: int = 2                # attack frame (starting at 0) where the hit lands
 @export var head_offset: float = 70.0         # height above the feet where damage numbers appear
 @export var arrow_offset: Vector2 = Vector2(20, 0)   # where arrows spawn, relative to the unit
+
+@export var shoot_sound: AudioStream 
 
 var direction: int = 1
 var facing: int = 1
@@ -179,6 +187,22 @@ func _do_attack(target: Node2D) -> void:
 		_shoot(target)
 	else:
 		target.take_damage(damage)
+		_play_punch()
+
+func _play_punch() -> void:
+	_play_sound(PUNCH_SOUNDS.pick_random(), -4.0)
+
+func _play_sound(stream: AudioStream, volume_db: float = 0.0) -> void:
+	if stream == null:
+		return   # a unit with no sound set simply stays silent
+	var p := AudioStreamPlayer.new()
+	p.stream = stream
+	p.bus = "SFX"
+	p.volume_db = volume_db
+	p.pitch_scale = randf_range(0.9, 1.1)   # small variation so repeats don't sound identical
+	p.finished.connect(p.queue_free)
+	get_tree().current_scene.add_child(p)
+	p.play()
 
 func _nearest_target() -> Node2D:
 	var best: Node2D = null
@@ -191,6 +215,7 @@ func _nearest_target() -> Node2D:
 	return best
 
 func _shoot(target: Node2D) -> void:
+	_play_sound(shoot_sound, -6.0)
 	var dir: Vector2 = target.global_position - global_position
 	if dir.length() < 1.0:
 		dir = Vector2(direction, 0)

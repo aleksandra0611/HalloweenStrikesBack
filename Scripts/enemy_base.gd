@@ -45,3 +45,11 @@ func _show_damage(amount: int) -> void:
 	get_tree().current_scene.add_child(n)
 	last_number = n
 	last_number_time = now
+
+func heal(amount: int) -> void:
+	if is_dead or health >= max_health:
+		return
+	health = mini(health + amount, max_health)
+	health_bar.value = health
+	modulate = Color(0.6, 1.0, 0.6)
+	create_tween().tween_property(self, "modulate", Color.WHITE, 0.4)

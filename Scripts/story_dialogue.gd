@@ -20,6 +20,8 @@ var _name_label: Label
 var _text_label: Label
 var _hint_label: Label
 var _skip_button: Button
+var _blip: AudioStreamPlayer
+var _voice_pitch: float = 1.0
 
 func _ready() -> void:
 	layer = 50
@@ -100,6 +102,11 @@ func _ready() -> void:
 	_ignore_mouse(_panel)
 
 	_set_open(false)
+	
+	_blip = AudioStreamPlayer.new()
+	_blip.stream = load("res://Audio/blip.wav")
+	_blip.bus = "SFX"
+	add_child(_blip)
 
 func _ignore_mouse(n: Node) -> void:
 	if n is Control and not n is Button:
@@ -145,9 +152,16 @@ func _show_line() -> void:
 func _process(delta: float) -> void:
 	if not _typing:
 		return
+	var before := int(_shown)
 	_shown += CHARS_PER_SEC * delta
-	_text_label.visible_characters = int(_shown)
-	if int(_shown) >= _text_label.text.length():
+	var now := int(_shown)
+	_text_label.visible_characters = now
+	# a blip every second letter, skipping spaces
+	if now != before and now % 2 == 0 and now <= _text_label.text.length() \
+			and _text_label.text[now - 1] != " ":
+		_blip.pitch_scale = _voice_pitch * randf_range(0.85, 1.15)
+		_blip.play()
+	if now >= _text_label.text.length():
 		_finish_typing()
 
 func _finish_typing() -> void:

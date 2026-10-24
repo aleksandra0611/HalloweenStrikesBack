@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://dga75pr84msnl"]
 
 [ext_resource type="Script" uid="uid://bw8rnn8bpq503" path="res://Scripts/main_menu.gd" id="1_28flt"]
+[ext_resource type="Texture2D" uid="uid://0rvumie4jsjn" path="res://Art/MenuBackground.png" id="2_1ehe0"]
+[ext_resource type="AudioStream" uid="uid://eflet4k5okik" path="res://Audio/MenuMusic.mp3" id="2_48xlc"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_48xlc"]
 font_size = 64
-font_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_28flt"]
 bg_color = Color(0.8606249, 0.4976129, 0.10212881, 1)
@@ -18,26 +19,24 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_28flt")
 
-[node name="Background" type="ColorRect" parent="." unique_id=55918725]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.88948625, 0.39378706, 0.16661423, 1)
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1569446763]
+position = Vector2(576.5, 324.5)
+scale = Vector2(0.749349, 0.63183594)
+texture = ExtResource("2_1ehe0")
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1598779817]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 1
+anchor_left = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = -718.0
+offset_bottom = 658.0
+grow_horizontal = 0
+scale = Vector2(0.5, 0.5)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=759191451]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 22
 
 [node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1593683044]
 layout_mode = 2
@@ -46,33 +45,42 @@ text = "Halloween Strikes Back"
 label_settings = SubResource("LabelSettings_48xlc")
 horizontal_alignment = 1
 
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBoxContainer" unique_id=2118834142]
+custom_minimum_size = Vector2(10, 30)
+layout_mode = 2
+
 [node name="StoryButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=709213519]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 50)
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
 text = "Story Mode"
 
 [node name="EndlessButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1870732662]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = "Endless Mode"
+text = " Endless Mode  "
 
 [node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1899940742]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = "Settings"
+text = "       Settings       "
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2040388711]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = "Quit"
+text = "          Quit           "
 
 [node name="SettingsPanel" type="PanelContainer" parent="." unique_id=1692246060]
 unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(450, 400)
 layout_mode = 1
 anchors_preset = 8
@@ -162,3 +170,8 @@ text = "Show damage numbers"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Back"
+
+[node name="MenuMusic" type="AudioStreamPlayer2D" parent="." unique_id=1734812527]
+stream = ExtResource("2_48xlc")
+autoplay = true
+bus = &"Music"

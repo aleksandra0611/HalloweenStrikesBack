@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://6fr7cti40ccj" path="res://Scenes/fireball.tscn" id="2_tgifl"]
 [ext_resource type="Texture2D" uid="uid://cv0txjspbljbk" path="res://Art/pumpkin_attack.png" id="2_twh7v"]
 [ext_resource type="Texture2D" uid="uid://bgrf7rrddi7ys" path="res://Art/pumpkin_idle.png" id="3_tgifl"]
+[ext_resource type="AudioStream" uid="uid://0gvl7pi65jrj" path="res://Audio/pumpkin_fireball.mp3" id="3_ws2ld"]
 [ext_resource type="Texture2D" uid="uid://wgxm1s8eusrg" path="res://Art/pumpkin_running.png" id="4_ws2ld"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
@@ -203,6 +204,7 @@ is_ranged = true
 damage = 1
 projectile_scene = ExtResource("2_tgifl")
 hit_frame = 4
+shoot_sound = ExtResource("3_ws2ld")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1282862807]
 position = Vector2(0, 1)

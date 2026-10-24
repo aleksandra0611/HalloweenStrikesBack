@@ -1,13 +1,15 @@
 [gd_scene format=3 uid="uid://bdp5e0r21n1d0"]
 
-[ext_resource type="Script" uid="uid://bay5oi4c2a08c" path="res://Scripts/arrow.gd" id="1_ispdo"]
+[ext_resource type="Script" uid="uid://bay5oi4c2a08c" path="res://Scripts/snowball.gd" id="1_ispdo"]
+[ext_resource type="AudioStream" uid="uid://b1nifjca37fks" path="res://Audio/snowman_snowball_hit.mp3" id="2_ispdo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2u0bd"]
 size = Vector2(6, 6)
 
-[node name="Arrow" type="Area2D" unique_id=1627774859]
+[node name="snowball" type="Area2D" unique_id=1627774859]
 script = ExtResource("1_ispdo")
 speed = 400.0
+hit_sound = ExtResource("2_ispdo")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=418365305]
 offset_left = -3.0
