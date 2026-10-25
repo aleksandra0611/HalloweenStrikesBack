@@ -7,7 +7,7 @@ extends Node2D
 # Press F4 in game to print power / fair cost for every unit.
 const PLAYER_UNITS := {
 	"bat": {"name": "Bat", "cost": 2, "scene": preload("res://Scenes/bat.tscn"), "train_time": 1.5,
-		"hp": 2, "damage": 1, "interval": 0.8, "speed": 150.0},      # fast, fragile swarmer
+		"hp": 2, "damage": 1, "interval": 1.1, "speed": 150.0},      # fast, fragile swarmer
 	"ghost": {"name": "Ghost", "cost": 4, "scene": preload("res://Scenes/ghost.tscn"), "train_time": 3.0,
 		"hp": 8, "damage": 1, "interval": 1.0, "speed": 80.0},       # slow tank that soaks damage
 	"pumpkin": {"name": "Jack", "cost": 5, "scene": preload("res://Scenes/pumpkin.tscn"), "train_time": 3.0,
@@ -96,6 +96,9 @@ const AI_GOLD_CAP := 10.0              # they can't stockpile more than this
 const AI_BUY_GAP := 0.5               # minimum seconds between two purchases
 const AI_BUY_GAP_DEFENDING := 0.0     # ... while their base is under attack
 const AI_ALARM_BONUS := 5.0           # one-off emergency gold when a real push arrives (0 = off)
+const AI_REPAIR_BELOW := 0.25        # base under 25% health: switch to repair mode
+const AI_REPAIR_UNTIL := 0.5         # ...and stay in it until it's back above 50%
+
 const SPAWN_JITTER := 25.0
 # ---------------- ENDLESS MODE ----------------
 const ENDLESS_START_GOLD := 8          # starting gold (the story starts with 5)
@@ -126,11 +129,9 @@ const PAR_TIME := 240.0          # win faster than this (seconds) to earn a time
 const TIME_POINTS_PER_SEC := 10
 
 # base heal
-const BASE_HEAL_AMOUNT := 1
-const ENEMY_BASE_HEAL_AMOUNT := 0.7
+const BASE_HEAL_AMOUNT := 2
+const ENEMY_BASE_HEAL_AMOUNT := 1
 const BASE_HEAL_INTERVAL := 1.0
-
-const UNLOCK_SOUND_MAX := 1.5 
 
 var money: int = 5
 var game_over: bool = false
@@ -149,6 +150,7 @@ var ai_plan: Dictionary = {}   # the unit the AI is currently saving up for
 var enemy_threatened: bool = false
 var alarm_cooldown: float = 0.0
 var ai_think_timer: float = 0.0
+var enemy_repairing: bool = false
 var story: Node
 # endless mode
 var wave: int = 0
@@ -365,8 +367,14 @@ func _tick_enemy_ai(delta: float) -> void:
 	if not is_instance_valid(enemy_base):
 		return
 
+	var base_ratio := float(enemy_base.health) / float(enemy_base.max_health)
+	if base_ratio < AI_REPAIR_BELOW:
+		enemy_repairing = true
+	elif base_ratio >= AI_REPAIR_UNTIL:
+		enemy_repairing = false
+
 	var attackers := _count_player_near_base(AI_THREAT_RANGE)
-	var threatened := attackers > 0
+	var threatened := attackers > 0 or enemy_repairing
 	if threatened != enemy_threatened:
 		enemy_threatened = threatened
 		_set_enemy_stance(threatened)

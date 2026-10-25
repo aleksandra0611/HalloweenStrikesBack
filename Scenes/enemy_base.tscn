@@ -6,8 +6,29 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cs1oe"]
 size = Vector2(201, 459)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cs1oe"]
+bg_color = Color(0.6, 0.6, 0.6, 0.40784314)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jd0l4"]
 bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [node name="EnemyBase" type="StaticBody2D" unique_id=1868263003]
 script = ExtResource("1_cs1oe")
@@ -22,11 +43,12 @@ position = Vector2(14, -161.00002)
 scale = Vector2(0.34070548, 0.36837658)
 texture = ExtResource("2_cs1oe")
 
-[node name="HealthBar" type="ProgressBar" parent="." unique_id=1243488450]
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=63006169]
 custom_minimum_size = Vector2(40, 6)
 offset_left = -33.0
 offset_top = -334.0
 offset_right = 33.0
 offset_bottom = -322.0
+theme_override_styles/background = SubResource("StyleBoxFlat_cs1oe")
 theme_override_styles/fill = SubResource("StyleBoxFlat_jd0l4")
 show_percentage = false

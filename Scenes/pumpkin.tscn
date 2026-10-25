@@ -13,9 +13,6 @@ size = Vector2(65, 71)
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
 radius = 246.07722
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
-bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_itmsq"]
 atlas = ExtResource("2_twh7v")
 region = Rect2(0, 0, 64, 64)
@@ -195,6 +192,30 @@ animations = [{
 "speed": 18.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ws2ld"]
+bg_color = Color(0.6, 0.6, 0.6, 0.40784314)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_itmsq"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="pumpkin" type="CharacterBody2D" unique_id=246681695]
 collision_layer = 4
 collision_mask = 5
@@ -218,17 +239,18 @@ collision_mask = 10
 position = Vector2(-3, -4)
 shape = SubResource("CircleShape2D_1f0kj")
 
-[node name="HealthBar" type="ProgressBar" parent="." unique_id=317793147]
-custom_minimum_size = Vector2(40, 6)
-offset_left = -33.0
-offset_top = -65.0
-offset_right = 33.0
-offset_bottom = -53.0
-theme_override_styles/fill = SubResource("StyleBoxFlat_1f0kj")
-show_percentage = false
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=590899447]
 position = Vector2(-1, 7)
 scale = Vector2(2.3337953, 2.566931)
 sprite_frames = SubResource("SpriteFrames_8cim4")
 animation = &"idle"
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=356819366]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -49.0
+offset_right = 33.0
+offset_bottom = -37.0
+theme_override_styles/background = SubResource("StyleBoxFlat_ws2ld")
+theme_override_styles/fill = SubResource("StyleBoxFlat_itmsq")
+show_percentage = false

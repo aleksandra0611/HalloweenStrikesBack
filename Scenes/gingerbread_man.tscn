@@ -12,9 +12,6 @@ size = Vector2(53, 148)
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
 radius = 86.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
-bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_np7o7"]
 atlas = ExtResource("2_8nej4")
 region = Rect2(0, 0, 64, 64)
@@ -89,6 +86,30 @@ animations = [{
 "speed": 4.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_8nej4"]
+bg_color = Color(0.6, 0.6, 0.6, 0.40784314)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5w2lw"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="gingerbread_man" type="CharacterBody2D" unique_id=246681695]
 collision_layer = 4
 collision_mask = 5
@@ -108,18 +129,19 @@ collision_mask = 10
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange" unique_id=11460576]
 shape = SubResource("CircleShape2D_1f0kj")
 
-[node name="HealthBar" type="ProgressBar" parent="." unique_id=317793147]
-custom_minimum_size = Vector2(40, 6)
-offset_left = -33.0
-offset_top = -90.0
-offset_right = 33.0
-offset_bottom = -78.0
-theme_override_styles/fill = SubResource("StyleBoxFlat_1f0kj")
-show_percentage = false
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=590899447]
 position = Vector2(-4.7683716e-07, -4.7683716e-07)
 scale = Vector2(3.0770655, 3.1043828)
 sprite_frames = SubResource("SpriteFrames_8cim4")
 animation = &"run"
 frame_progress = 0.73221767
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=410324756]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -90.0
+offset_right = 33.0
+offset_bottom = -78.0
+theme_override_styles/background = SubResource("StyleBoxFlat_8nej4")
+theme_override_styles/fill = SubResource("StyleBoxFlat_5w2lw")
+show_percentage = false

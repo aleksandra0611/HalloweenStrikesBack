@@ -6,7 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://bnj2an7v0dbos" path="res://Scenes/settings_panel.tscn" id="3_ce3w2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_48xlc"]
-font_size = 64
+font_size = 96
+outline_size = 12
+outline_color = Color(0, 0, 0, 1)
 
 [node name="MainMenu" type="Control" unique_id=463141591]
 layout_mode = 3
@@ -24,12 +26,10 @@ texture = ExtResource("2_1ehe0")
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1598779817]
 layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -718.0
-offset_bottom = 658.0
-grow_horizontal = 0
+offset_left = 318.0
+offset_top = 35.0
+offset_right = 1396.0
+offset_bottom = 551.0
 scale = Vector2(0.5, 0.5)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=759191451]
@@ -38,6 +38,7 @@ theme_override_constants/separation = 22
 
 [node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1593683044]
 layout_mode = 2
+size_flags_horizontal = 8
 theme_override_font_sizes/font_size = 44
 text = "Halloween Strikes Back"
 label_settings = SubResource("LabelSettings_48xlc")
@@ -49,7 +50,7 @@ layout_mode = 2
 
 [node name="StoryButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=709213519]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(250, 50)
+custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
@@ -57,27 +58,31 @@ text = "Story Mode"
 
 [node name="EndlessButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1870732662]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = " Endless Mode  "
+text = "Endless Mode"
 
 [node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1899940742]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = "       Settings       "
+text = "Settings"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=2040388711]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 32
-text = "          Quit           "
+text = "Quit"
 
 [node name="SettingsPanel" parent="." unique_id=582004197 instance=ExtResource("3_ce3w2")]
 unique_name_in_owner = true
+visible = false
 layout_mode = 1
 offset_left = -228.0
 offset_top = -200.0

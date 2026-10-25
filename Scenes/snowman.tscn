@@ -11,9 +11,6 @@ size = Vector2(63, 63)
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
 radius = 242.00206
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
-bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_myp7v"]
 atlas = ExtResource("2_i1e4d")
 region = Rect2(0, 0, 16, 16)
@@ -83,6 +80,30 @@ animations = [{
 "speed": 6.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l5jrg"]
+bg_color = Color(0.6, 0.6, 0.6, 0.40784314)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_myp7v"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="snowman" type="CharacterBody2D" unique_id=246681695]
 collision_layer = 4
 collision_mask = 5
@@ -110,18 +131,19 @@ collision_mask = 10
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange" unique_id=11460576]
 shape = SubResource("CircleShape2D_1f0kj")
 
-[node name="HealthBar" type="ProgressBar" parent="." unique_id=317793147]
-custom_minimum_size = Vector2(40, 6)
-offset_left = -33.0
-offset_top = -49.0
-offset_right = 33.0
-offset_bottom = -37.0
-theme_override_styles/fill = SubResource("StyleBoxFlat_1f0kj")
-show_percentage = false
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=590899447]
 position = Vector2(-1.0000001, -3)
 scale = Vector2(3.8971052, 3.7725484)
 sprite_frames = SubResource("SpriteFrames_8cim4")
 animation = &"run"
 frame_progress = 0.8855444
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=172833287]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -49.0
+offset_right = 33.0
+offset_bottom = -37.0
+theme_override_styles/background = SubResource("StyleBoxFlat_l5jrg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_myp7v")
+show_percentage = false

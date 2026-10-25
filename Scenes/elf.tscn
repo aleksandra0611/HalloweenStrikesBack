@@ -11,9 +11,6 @@ size = Vector2(65, 73)
 [sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
 radius = 82.006096
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
-bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_qb80o"]
 atlas = ExtResource("2_kuhlm")
 region = Rect2(0, 0, 64, 64)
@@ -221,6 +218,30 @@ animations = [{
 "speed": 8.0
 }]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kuhlm"]
+bg_color = Color(0.6, 0.6, 0.6, 0.40784314)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yt08m"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="elf" type="CharacterBody2D" unique_id=246681695]
 collision_layer = 4
 collision_mask = 5
@@ -241,15 +262,6 @@ collision_mask = 10
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange" unique_id=11460576]
 shape = SubResource("CircleShape2D_1f0kj")
 
-[node name="HealthBar" type="ProgressBar" parent="." unique_id=317793147]
-custom_minimum_size = Vector2(40, 6)
-offset_left = -33.0
-offset_top = -65.0
-offset_right = 33.0
-offset_bottom = -53.0
-theme_override_styles/fill = SubResource("StyleBoxFlat_1f0kj")
-show_percentage = false
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=590899447]
 position = Vector2(-4.7683716e-07, -4.7683716e-07)
 scale = Vector2(2.6164312, 2.6739745)
@@ -257,3 +269,13 @@ sprite_frames = SubResource("SpriteFrames_8cim4")
 animation = &"attack"
 frame = 11
 frame_progress = 1.0
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=64376888]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -65.0
+offset_right = 33.0
+offset_bottom = -53.0
+theme_override_styles/background = SubResource("StyleBoxFlat_kuhlm")
+theme_override_styles/fill = SubResource("StyleBoxFlat_yt08m")
+show_percentage = false
