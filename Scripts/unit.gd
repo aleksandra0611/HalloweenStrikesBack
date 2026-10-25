@@ -37,6 +37,8 @@ const PUNCH_SOUNDS := [
 @export var arrow_offset: Vector2 = Vector2(20, 0)   # where arrows spawn, relative to the unit
 
 @export var shoot_sound: AudioStream 
+@export var defend_engage: float = 180.0   # defenders step out to fight enemies this close (0 = never)
+@export var retreat_distance: float = 150.0   # on Defend, units farther than this from the defend point run home instead of fighting (0 = off)
 
 var direction: int = 1
 var facing: int = 1
@@ -56,6 +58,7 @@ var defend_x: float = 0.0
 var attacking: bool = false
 var attack_hit_done: bool = false
 var attack_target: Node2D = null
+var returning: bool = false
 
 @onready var attack_range: Area2D = $AttackRange
 @onready var health_bar: ProgressBar = $HealthBar
@@ -108,16 +111,42 @@ func _physics_process(delta: float) -> void:
 	if is_instance_valid(enemy_base):
 		base_dx = enemy_base.global_position.x - global_position.x
 	var near_base := absf(base_dx) < siege_zone
-	collision_mask = LAYER_GROUND if (near_base or defending) else normal_mask  
+	collision_mask = LAYER_GROUND if (near_base or defending) else normal_mask
 
-	if not targets.is_empty():
+	# Defend: run home when far from the defend point.
+	# Starts beyond retreat_distance, stops inside half of it, so it can't flicker at the edge.
+	var hold_x := defend_x - defend_back * direction
+	var home_dx := hold_x - global_position.x
+	if not (is_player and defending and retreat_distance > 0.0):
+		returning = false
+	elif absf(home_dx) > retreat_distance:
+		returning = true
+	elif absf(home_dx) <= retreat_distance * 0.5:
+		returning = false
+
+	if returning:
+		# drop the fight and run back to the defend point
+		if attacking:
+			attacking = false
+			attack_target = null
+		velocity.x = signf(home_dx) * speed
+		attack_timer = attack_interval
+	elif not targets.is_empty():
 		# fight units in range first
 		velocity.x = 0.0
 		_try_attack(delta, _nearest_target())
 	elif defending:
-		# walk to the defend point and wait there
-		var dx := (defend_x - defend_back * direction) - global_position.x
-		velocity.x = signf(dx) * speed if absf(dx) > 6.0 else 0.0
+		# step out to an enemy that is close, but never past the leash
+		var leash := retreat_distance if retreat_distance > 0.0 else INF
+		var foe := _nearest_enemy_within(defend_engage)
+		if foe != null and absf(foe.global_position.x - hold_x) > leash:
+			foe = null
+		if foe != null:
+			var fdx := foe.global_position.x - global_position.x
+			velocity.x = signf(fdx) * speed if absf(fdx) > 6.0 else 0.0
+		else:
+			# otherwise walk to the defend point and wait there
+			velocity.x = signf(home_dx) * speed if absf(home_dx) > 6.0 else 0.0
 		attack_timer = attack_interval
 	elif near_base and absf(base_dx) <= siege_distance:
 		# in position: attack the base
@@ -136,10 +165,8 @@ func _physics_process(delta: float) -> void:
 # ---------- attacking ----------
 
 func _try_attack(delta: float, target: Node2D) -> void:
-	if attacking:
-		return
 	attack_timer -= delta
-	if attack_timer > 0.0:
+	if attacking or attack_timer > 0.0:
 		return
 	attack_timer = attack_interval
 	_start_attack(target)
@@ -213,7 +240,22 @@ func _nearest_target() -> Node2D:
 			best_dist = d
 			best = t
 	return best
-
+	
+func _nearest_enemy_within(max_dist: float) -> Node2D:
+	if max_dist <= 0.0:
+		return null
+	var best: Node2D = null
+	var best_d := max_dist
+	for e in get_tree().get_nodes_in_group("enemy_army" if is_player else "player_army"):
+		var n := e as Node2D
+		if n == null or n.get("is_dead"):
+			continue
+		var d := absf(n.global_position.x - global_position.x)
+		if d < best_d:
+			best_d = d
+			best = n
+	return best
+	
 func _shoot(target: Node2D) -> void:
 	_play_sound(shoot_sound, -6.0)
 	var dir: Vector2 = target.global_position - global_position

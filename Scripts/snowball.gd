@@ -27,6 +27,7 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 func _on_body_entered(body: Node2D) -> void:
+	print("snowball touched: ", body.name)
 	if hit:
 		return
 	if body.has_method("take_damage"):
@@ -36,6 +37,7 @@ func _on_body_entered(body: Node2D) -> void:
 		queue_free()
 
 func _play_hit_sound() -> void:
+	print("hit_sound = ", hit_sound)
 	if hit_sound == null:
 		return   # projectiles with no sound set stay silent
 	var p := AudioStreamPlayer.new()

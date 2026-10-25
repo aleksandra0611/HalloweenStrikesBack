@@ -163,7 +163,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack",
-"speed": 12.0
+"speed": 16.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -255,4 +255,5 @@ position = Vector2(-4.7683716e-07, -4.7683716e-07)
 scale = Vector2(2.6164312, 2.6739745)
 sprite_frames = SubResource("SpriteFrames_8cim4")
 animation = &"attack"
-frame_progress = 0.8933961
+frame = 11
+frame_progress = 1.0

@@ -7,14 +7,14 @@ extends Node2D
 # Press F4 in game to print power / fair cost for every unit.
 const PLAYER_UNITS := {
 	"bat": {"name": "Bat", "cost": 2, "scene": preload("res://Scenes/bat.tscn"), "train_time": 1.5,
-		"hp": 2, "damage": 1, "interval": 0.6, "speed": 150.0},      # fast, fragile swarmer
+		"hp": 2, "damage": 1, "interval": 0.8, "speed": 150.0},      # fast, fragile swarmer
 	"ghost": {"name": "Ghost", "cost": 4, "scene": preload("res://Scenes/ghost.tscn"), "train_time": 3.0,
 		"hp": 8, "damage": 1, "interval": 1.0, "speed": 80.0},       # slow tank that soaks damage
 	"pumpkin": {"name": "Jack", "cost": 5, "scene": preload("res://Scenes/pumpkin.tscn"), "train_time": 3.0,
-		"unlock_kills": 1, "unlock_sound": preload("res://Audio/pumpkin_unlock_sound.mp3"),
+		"unlock_kills": 10, "unlock_sound": preload("res://Audio/pumpkin_unlock_sound.mp3"),
 		"hp": 5, "damage": 2, "interval": 1.0, "speed": 100.0},      # strong all-round bruiser
 	"skeleton": {"name": "Skeleton", "cost": 8, "scene": preload("res://Scenes/skeleton.tscn"), "train_time": 4.0,
-		"unlock_kills": 2, "unlock_sound": preload("res://Audio/skeleton_unlock_sound.mp3"),   
+		"unlock_kills": 20, "unlock_sound": preload("res://Audio/skeleton_unlock_sound.mp3"),   
 		"hp": 12, "damage": 2, "interval": 1.2, "speed": 60.0},      # slow, tough tank
 }
 
@@ -27,9 +27,9 @@ const ENEMY_UNITS := [
 	{"name": "Santa", "scene": preload("res://Scenes/Santa.tscn"), "cost": 4, "weight": 3, "reward": 2, "ranged": false,
 		"hp": 4, "damage": 2, "interval": 1.2, "speed": 80.0},       # slow bruiser
 	{"name": "Elf", "scene": preload("res://Scenes/elf.tscn"), "cost": 2, "weight": 2, "reward": 1, "ranged": false,
-		"hp": 2, "damage": 1, "interval": 0.7, "speed": 100.0},      # fast and fragile
+		"hp": 2, "damage": 1, "interval": 0.6, "speed": 100.0},      # fast and fragile
 	{"name": "Snowman", "scene": preload("res://Scenes/snowman.tscn"), "cost": 3, "weight": 2, "reward": 2, "ranged": true,
-		"unlock_with": "pumpkin", "hp": 3, "damage": 1, "interval": 0.7, "speed": 90.0},       # snowball thrower
+		"unlock_with": "pumpkin", "hp": 3, "damage": 1, "interval": 1.1, "speed": 90.0},       # snowball thrower
 	]
 
 const StoryDialogue = preload("res://Scripts/story_dialogue.gd")
@@ -49,7 +49,7 @@ const INTRO_PART_2 := [
 const AI_THREAT_RANGE := 650.0        # our units this close to their base = base under attack
 const AI_RECALL_RANGE := 600.0        # enemy units this close to their base get pulled back to defend
 const AI_DEFEND_OFFSET := 220.0       # defend point distance in front of their base
-const AI_MAX_ALIVE := 10             # hard cap on enemies alive (keeps the game beatable)
+const AI_MAX_ALIVE := 15             # hard cap on enemies alive (keeps the game beatable)
 const AI_ALARM_MIN_ATTACKERS := 2     # this many of our units at their base triggers reinforcements
 const AI_ALARM_UNITS := 2             # how many extra units spawn instantly
 const AI_ALARM_COOLDOWN := 25.0       # seconds between emergency reinforcements
@@ -57,12 +57,12 @@ const AI_MAX_RANGED_SHARE := 0.5      # AI won't build an army that's more than 
 const AI_SORTIE_RANGE := 330.0        # defenders charge out at one of our ranged units this close (archers outrange melee)
 # enemy economy: they pay for every unit, just like you
 const AI_START_GOLD := 5.0
-const AI_INCOME_PER_SEC := 0.05        # passive gold per second 
+const AI_INCOME_PER_SEC := 0.12        # passive gold per second 
 const AI_KILL_REWARD_RATIO := 0.5     # they get this share of the cost of every unit of ours that dies
-const AI_GOLD_CAP := 8.0              # they can't stockpile more than this
-const AI_BUY_GAP := 2.0               # minimum seconds between two purchases
-const AI_BUY_GAP_DEFENDING := 1.0     # ... while their base is under attack
-const AI_ALARM_BONUS := 3.0           # one-off emergency gold when a real push arrives (0 = off)
+const AI_GOLD_CAP := 10.0              # they can't stockpile more than this
+const AI_BUY_GAP := 0.5               # minimum seconds between two purchases
+const AI_BUY_GAP_DEFENDING := 0.0     # ... while their base is under attack
+const AI_ALARM_BONUS := 5.0           # one-off emergency gold when a real push arrives (0 = off)
 const SPAWN_JITTER := 25.0
 
 # ---------------- SETTINGS ----------------
@@ -72,7 +72,7 @@ const UNIT_BUTTON_SIZE := Vector2(110, 50)
 
 # passive income (set INCOME_AMOUNT to 0 to turn it off)
 const INCOME_AMOUNT := 1
-const INCOME_INTERVAL := 10
+const INCOME_INTERVAL := 15
 
 # score
 const KILL_POINTS := 100
