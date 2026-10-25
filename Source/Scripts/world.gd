@@ -30,7 +30,7 @@ const ENEMY_UNITS := [
 	{"name": "Elf", "scene": preload("res://Scenes/elf.tscn"), "cost": 2, "weight": 2, "reward": 1, "ranged": false,
 		"endless_wave": 1, "hp": 2, "damage": 1, "interval": 0.6, "speed": 100.0},      # fast and fragile
 	{"name": "Snowman", "scene": preload("res://Scenes/snowman.tscn"), "cost": 3, "weight": 2, "reward": 2, "ranged": true,
-		"unlock_with": "pumpkin", "endless_wave": 5, "hp": 3, "damage": 1, "interval": 1.1, "speed": 90.0},       # snowball thrower
+		"unlock_with": "pumpkin", "endless_wave": 5, "hp": 3, "damage": 1, "interval": 0.9, "speed": 93.0},       # snowball thrower
 		{"name": "Gingerbread", "scene": preload("res://Scenes/gingerbread_man.tscn"), "cost": 5, "weight": 2, "reward": 3, "ranged": false,
 		"unlock_with": "skeleton", "endless_wave": 8, "hp": 9, "damage": 4, "interval": 1.5, "speed": 63.0},       # tough melee bruiser
 	]
@@ -188,7 +188,6 @@ func _ready() -> void:
 		GameMode.level = level_number
 	$CanvasLayer/PauseButton.pressed.connect($PauseMenu.toggle)
 	_build_unit_buttons()
-	_setup_debug()
 	enemy_timer.stop()  
 	restart_button.pressed.connect(_on_restart_pressed)
 	menu_button.pressed.connect(_on_menu_pressed)
@@ -256,7 +255,7 @@ func _process(delta: float) -> void:
 		_tick_endless(delta)
 	else:
 		_tick_enemy_ai(delta)
-	_update_debug()
+
 
 func _tick_income(delta: float) -> void:
 	income_timer += delta
@@ -764,109 +763,12 @@ func _start_level_music() -> void:
 	level_music.play()
 	create_tween().tween_property(level_music, "volume_db", 0.0, 2.0)   # 2 second fade-in
 
-
-#  DEBUG (delete before release)
-const DEBUG_KEYS := true
-var debug_on := false
-var debug_label: Label
-
-func _setup_debug() -> void:
-	debug_label = Label.new()
-	debug_label.position = Vector2(10, 90)
-	debug_label.visible = false
-	$CanvasLayer.add_child(debug_label)
+# ---------- F2 cheat: spawn 5 pumpkins ----------
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not DEBUG_KEYS or not (event is InputEventKey and event.pressed and not event.echo):
+	if game_over or not (event is InputEventKey and event.pressed and not event.echo):
 		return
-	match event.keycode:
-		KEY_F1:   # toggle overlay
-			debug_on = not debug_on
-			debug_label.visible = debug_on
-			queue_redraw()
-		KEY_F2:   # spawn 5 of our warriors just outside the enemy base range
-			for i in 5:
-				var u := _spawn(PLAYER_UNITS["pumpkin"], true, spawn_point)
-				u.global_position = Vector2((enemy_base.global_position.x if is_instance_valid(enemy_base) else 1600.0) - AI_THREAT_RANGE + 100 - i * 30, spawn_point.global_position.y)
-		KEY_F3:   # +20 gold
-			money += 20
-			update_ui()
-		KEY_F4:   # print map/unit info to the Output panel
-			_print_layout_info()
-		KEY_F5:   # endless: start the next wave right now
-			if GameMode.endless:
-				_start_wave()
-
-func _update_debug() -> void:
-	if not debug_on:
-		return
-	debug_label.text = "Threatened: %s\nAttackers near base: %d\nEnemies alive: %d / %d\nEnemy gold: %.1f / %.0f (income %.2f/s)\nSaving for: %s (cost %s)\nBuy cooldown: %.1fs   Alarm cooldown: %.1fs" % [
-		enemy_threatened, _count_player_near_base(AI_THREAT_RANGE),
-		get_tree().get_nodes_in_group("enemy_army").size(), AI_MAX_ALIVE,
-		enemy_gold, AI_GOLD_CAP, enemy_income,
-		ai_plan.get("name", "-"), ai_plan.get("cost", "-"),
-		buy_cooldown, alarm_cooldown]
-	queue_redraw()
-func _draw() -> void:
-	if not debug_on or not is_instance_valid(enemy_base):
-		return
-	var bx := enemy_base.global_position.x
-	var y := enemy_base.global_position.y
-	_debug_line(bx - AI_THREAT_RANGE, y, Color.RED)                 # threat range
-	_debug_line(bx - AI_RECALL_RANGE, y, Color.ORANGE)              # recall range
-	_debug_line(bx - AI_DEFEND_OFFSET, y, Color.YELLOW)             # defend point
-	_debug_line(bx - 250.0, y, Color.CYAN)                          # siege zone (unit default)
-
-func _debug_line(x: float, y: float, c: Color) -> void:
-	draw_line(to_local(Vector2(x, y - 400)), to_local(Vector2(x, y + 200)), c, 3.0)
-
-func _print_layout_info() -> void:
-	print("===== LAYOUT INFO =====")
-	var vp := get_viewport_rect().size
-	print("Viewport size: ", vp)
-	print("Your base x: ", player_base.global_position.x if is_instance_valid(player_base) else "gone")
-	print("Enemy base x: ", enemy_base.global_position.x if is_instance_valid(enemy_base) else "gone")
-	print("Your spawn: ", spawn_point.global_position, "   Enemy spawn: ", enemy_spawn_point.global_position)
-	print("Defend point: ", defend_point.global_position)
-	print("Enemy timer wait_time: ", enemy_timer.wait_time)
-	var cam := get_viewport().get_camera_2d()
-	if cam:
-		print("Camera limits L/R/T/B: ", cam.limit_left, " / ", cam.limit_right, " / ", cam.limit_top, " / ", cam.limit_bottom)
-	print("--- units ---")
-	var scenes: Array = []
-	for k in PLAYER_UNITS:
-		scenes.append([PLAYER_UNITS[k]["name"], PLAYER_UNITS[k]["scene"]])
-	for e in ENEMY_UNITS:
-		scenes.append([e["scene"].resource_path.get_file(), e["scene"]])
-	for s in scenes:
-		var u = s[1].instantiate()
-		var rng := "?"
-		var ar = u.get_node_or_null("AttackRange")
-		if ar:
-			for c in ar.get_children():
-				if c is CollisionShape2D and c.shape:
-					rng = str(c.shape.get_rect().size) + " at " + str(c.position)
-		print("%s | ranged=%s speed=%s hp=%s dmg=%s interval=%s attack_range_box=%s" % [
-			s[0], u.is_ranged, u.speed, u.max_health, u.damage, u.attack_interval, rng])
-		u.free()
-	print("=======================")
-	_print_balance()
-
-func _print_balance() -> void:
-	print("--- balance: power -> fair cost (power / 2) vs the numbers you set ---")
-	var all: Array = []
-	for k in PLAYER_UNITS:
-		all.append(["Player " + PLAYER_UNITS[k]["name"], PLAYER_UNITS[k]])
-	for e in ENEMY_UNITS:
-		all.append(["Enemy " + e["scene"].resource_path.get_file(), e])
-	for a in all:
-		var info: Dictionary = a[1]
-		var u = info["scene"].instantiate()
-		var hp: float = info.get("hp", u.max_health)
-		var dmg: float = info.get("damage", u.damage)
-		var interval: float = info.get("interval", u.attack_interval)
-		var spd: float = info.get("speed", u.speed)
-		var power := hp * (dmg / interval) * (1.5 if u.is_ranged else 1.0) * sqrt(spd / 100.0)
-		print("%s | ranged=%s power=%.1f fair cost~%.1f | cost=%s reward=%s" % [
-			a[0], u.is_ranged, power, power / 2.0, info.get("cost", "-"), info.get("reward", "-")])
-		u.free()
+	if event.keycode == KEY_F2:
+		for i in 5:
+			var u := _spawn(PLAYER_UNITS["pumpkin"], true, spawn_point)
+			u.global_position = Vector2((enemy_base.global_position.x if is_instance_valid(enemy_base) else 1600.0) - AI_THREAT_RANGE + 100 - i * 30, spawn_point.global_position.y)

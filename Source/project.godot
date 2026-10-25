@@ -13,7 +13,6 @@ config_version=5
 config/name="Halloween Strikes Back"
 run/main_scene="uid://dga75pr84msnl"
 config/features=PackedStringArray("4.6", "Mobile")
-config/icon="res://icon.svg"
 
 [audio]
 
@@ -31,6 +30,7 @@ window/stretch/mode="canvas_items"
 [gui]
 
 theme/custom="uid://cp0g6xp5d2uk1"
+theme/custom_font="uid://disexqe802w5d"
 
 [physics]
 

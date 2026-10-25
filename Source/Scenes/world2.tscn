@@ -262,7 +262,7 @@ offset_left = 4.0
 offset_top = 3.0
 offset_right = 55.0
 offset_bottom = 58.0
-text = "I I"
+text = "| |"
 
 [node name="SpawnPoint" type="Marker2D" parent="." unique_id=638142431]
 position = Vector2(359, 538)

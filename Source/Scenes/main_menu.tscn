@@ -1,12 +1,13 @@
 [gd_scene format=3 uid="uid://dga75pr84msnl"]
 
 [ext_resource type="Script" uid="uid://bw8rnn8bpq503" path="res://Scripts/main_menu.gd" id="1_28flt"]
-[ext_resource type="Texture2D" uid="uid://0rvumie4jsjn" path="res://Art/MenuBackground.png" id="2_1ehe0"]
 [ext_resource type="AudioStream" uid="uid://eflet4k5okik" path="res://Audio/MenuMusic.mp3" id="2_48xlc"]
+[ext_resource type="Texture2D" uid="uid://b1ouci4ejvocj" path="res://Art/Halloween Versus Christmas_ Magical Clash.png" id="2_ce3w2"]
 [ext_resource type="PackedScene" uid="uid://bnj2an7v0dbos" path="res://Scenes/settings_panel.tscn" id="3_ce3w2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_48xlc"]
 font_size = 96
+font_color = Color(0.9098039, 0.29411766, 0.101960786, 1)
 outline_size = 12
 outline_color = Color(0, 0, 0, 1)
 
@@ -21,15 +22,15 @@ script = ExtResource("1_28flt")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1569446763]
 position = Vector2(576.5, 324.5)
-scale = Vector2(0.749349, 0.63183594)
-texture = ExtResource("2_1ehe0")
+scale = Vector2(0.6953545, 0.69532007)
+texture = ExtResource("2_ce3w2")
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1598779817]
 layout_mode = 1
-offset_left = 318.0
-offset_top = 35.0
-offset_right = 1396.0
-offset_bottom = 551.0
+offset_left = 299.0
+offset_top = 24.0
+offset_right = 1403.0
+offset_bottom = 662.0
 scale = Vector2(0.5, 0.5)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=759191451]
