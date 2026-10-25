@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://bnj2an7v0dbos"]
+
+[ext_resource type="Script" uid="uid://cxpn6g6x22coy" path="res://Scripts/settings_panel.gd" id="1_8hrck"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_28flt"]
+bg_color = Color(0.8606249, 0.4976129, 0.10212881, 1)
+
+[node name="SettingsPanel" type="PanelContainer" unique_id=582004197]
+custom_minimum_size = Vector2(450, 400)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -62.0
+offset_top = -85.5
+offset_right = 62.0
+offset_bottom = 85.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8hrck")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1894309188]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1819871336]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="SettingsLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=894104962]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Settings"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer" unique_id=1769801049]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_28flt")
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer" unique_id=2135852571]
+layout_mode = 2
+theme_override_constants/h_separation = 32
+columns = 2
+
+[node name="MasterLabel" type="Label" parent="MarginContainer/VBoxContainer/GridContainer" unique_id=1064133514]
+layout_mode = 2
+text = "Master"
+
+[node name="MasterSlider" type="HSlider" parent="MarginContainer/VBoxContainer/GridContainer" unique_id=19342446]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="MusicLabel" type="Label" parent="MarginContainer/VBoxContainer/GridContainer" unique_id=1330752655]
+layout_mode = 2
+text = "Music"
+
+[node name="MusicSlider" type="HSlider" parent="MarginContainer/VBoxContainer/GridContainer" unique_id=1467059120]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="SfxLabel" type="Label" parent="MarginContainer/VBoxContainer/GridContainer" unique_id=1835439993]
+layout_mode = 2
+text = "Sound effects"
+
+[node name="SfxSlider" type="HSlider" parent="MarginContainer/VBoxContainer/GridContainer" unique_id=1395764240]
+unique_name_in_owner = true
+layout_mode = 2
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="FullscreenCheck" type="CheckBox" parent="MarginContainer/VBoxContainer" unique_id=1833810909]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="DamageNumbersCheck" type="CheckBox" parent="MarginContainer/VBoxContainer" unique_id=1858181099]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Show damage numbers"
+
+[node name="BackButton" type="Button" parent="MarginContainer/VBoxContainer" unique_id=192348115]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back"

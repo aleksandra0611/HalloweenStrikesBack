@@ -23,13 +23,14 @@ const PLAYER_UNITS := {
 # "weight"      = how much the AI wants it compared to the others
 # "reward"      = gold you get for killing it
 # "unlock_with" = (optional) key of one of out units: it unlocks for them when you unlock that one
+# "endless_wave" = (endless mode) the first wave this enemy can appear in
 const ENEMY_UNITS := [
 	{"name": "Santa", "scene": preload("res://Scenes/Santa.tscn"), "cost": 4, "weight": 3, "reward": 2, "ranged": false,
-		"hp": 4, "damage": 2, "interval": 1.2, "speed": 80.0},       # slow bruiser
+		"endless_wave": 3, "hp": 4, "damage": 2, "interval": 1.2, "speed": 80.0},       # slow bruiser
 	{"name": "Elf", "scene": preload("res://Scenes/elf.tscn"), "cost": 2, "weight": 2, "reward": 1, "ranged": false,
-		"hp": 2, "damage": 1, "interval": 0.6, "speed": 100.0},      # fast and fragile
+		"endless_wave": 1, "hp": 2, "damage": 1, "interval": 0.6, "speed": 100.0},      # fast and fragile
 	{"name": "Snowman", "scene": preload("res://Scenes/snowman.tscn"), "cost": 3, "weight": 2, "reward": 2, "ranged": true,
-		"unlock_with": "pumpkin", "hp": 3, "damage": 1, "interval": 1.1, "speed": 90.0},       # snowball thrower
+		"unlock_with": "pumpkin", "endless_wave": 5, "hp": 3, "damage": 1, "interval": 1.1, "speed": 90.0},       # snowball thrower
 	]
 
 const StoryDialogue = preload("res://Scripts/story_dialogue.gd")
@@ -43,6 +44,14 @@ const INTRO_PART_2 := [
 	{"speaker": "Jack", "text": "Bats and ghosts answer my call first. Defeat enough Christmas goons and stronger minions will join us. Spend your gold wisely!", "portrait":"res://Art/jack.png" },
 	{"speaker": "Jack", "text": "Use Attack to push forward and Defend to hold the line. Scroll the map with A and D.", "portrait":"res://Art/jack.png" },
 	{"speaker": "Jack", "text": "Smash their base and Christmas will think twice before showing up early again. Go, my minions!", "portrait":"res://Art/jack.png" },
+]
+
+const ENDLESS_INTRO := [
+	{"speaker": "Jack", "text": "Christmas isn't giving up. They're coming in waves, and every wave is stronger than the last!", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "There's no base to smash this time. All that matters is surviving as long as we can. Protect our base at all costs!", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Bats and ghosts answer my call first. Defeat enough Christmas goons and stronger minions will join us. Spend your gold wisely!", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Defend holds the line near our base and heals it. Advance moves the army out to meet them. Scroll the map with A and D.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Between waves you get a short break and bonus gold. How many waves can we survive? Go, my minions!", "portrait":"res://Art/jack.png" },
 ]
 
 # ENEMY AI
@@ -64,6 +73,19 @@ const AI_BUY_GAP := 0.5               # minimum seconds between two purchases
 const AI_BUY_GAP_DEFENDING := 0.0     # ... while their base is under attack
 const AI_ALARM_BONUS := 5.0           # one-off emergency gold when a real push arrives (0 = off)
 const SPAWN_JITTER := 25.0
+# ---------------- ENDLESS MODE ----------------
+const ENDLESS_START_GOLD := 8          # starting gold (the story starts with 5)
+const ENDLESS_FIRST_DELAY := 12.0      # seconds before wave 1
+const ENDLESS_BREAK := 8.0             # pause between waves, counted from the moment the last enemy dies
+const ENDLESS_WAVE_MAX_TIME := 60.0    # if a wave drags on, the next one starts anyway after this
+const ENDLESS_BUDGET_BASE := 6.0       # "points" the enemy can spend on wave 1 (units cost their "cost")
+const ENDLESS_BUDGET_PER_WAVE := 2.5   # extra points for every later wave
+const ENDLESS_HP_SCALE := 0.08         # enemies get +8% hp per wave
+const ENDLESS_DAMAGE_EVERY := 6        # enemies get +1 damage every 6 waves
+const ENDLESS_SPAWN_GAP := 0.8         # seconds between enemies of the same wave
+const ENDLESS_CLEAR_BONUS := 2         # gold for clearing a wave (+1 more every 5 waves)
+const ENDLESS_WAVE_POINTS := 250       # score per wave reached
+const ENDLESS_FORWARD_X := 650.0       # "Advance" holds our army at this x (there is no enemy base to march to)
 
 # ---------------- SETTINGS ----------------
 const DEFAULT_TRAIN_TIME := 2.0   # seconds per unit in the queue
@@ -104,6 +126,13 @@ var enemy_threatened: bool = false
 var alarm_cooldown: float = 0.0
 var ai_think_timer: float = 0.0
 var story: Node
+# endless mode
+var wave: int = 0
+var wave_active: bool = false
+var wave_budget: float = 0.0
+var wave_time: float = 0.0
+var wave_spawn_timer: float = 0.0
+var wave_countdown: float = ENDLESS_FIRST_DELAY
 
 @onready var unit_row: Container = $CanvasLayer/VBoxContainer/HBoxContainer
 @onready var spawn_bar: ProgressBar = $CanvasLayer/VBoxContainer/SpawnBar
@@ -130,7 +159,10 @@ func _ready() -> void:
 	enemy_timer.stop()  
 	restart_button.pressed.connect(_on_restart_pressed)
 	player_base.destroyed.connect(_on_player_base_destroyed)
-	enemy_base.destroyed.connect(_on_enemy_base_destroyed)
+	if GameMode.endless:
+		enemy_base.queue_free()   # no enemy base in endless mode
+	else:
+		enemy_base.destroyed.connect(_on_enemy_base_destroyed)
 	spawn_bar.max_value = DEFAULT_TRAIN_TIME
 	spawn_bar.value = 0.0
 
@@ -143,17 +175,22 @@ func _ready() -> void:
 	attack_button.pressed.connect(func(): _set_stance(false))
 	defend_button.pressed.connect(func(): _set_stance(true))
 
+	if GameMode.endless:
+		defend_button.button_pressed = true   # endless starts on Defend, near our base
+		defending = true
+		attack_button.text = "Advance"        # no enemy base, so Attack becomes "hold a forward line"
+		money = ENDLESS_START_GOLD
+
 	update_ui()
 	update_stats()
-	if not GameMode.endless:
-		story = StoryDialogue.new()
-		add_child(story)   # added last, so it gets input before the pause menu
-		if not GameMode.intro_seen:
-			_play_intro()
-		else:
-			_start_level_music()
-	else:
+	story = StoryDialogue.new()
+	add_child(story)   # added last, so it gets input before the pause menu
+	if GameMode.intro_seen:
 		_start_level_music()
+	elif GameMode.endless:
+		_play_endless_intro()
+	else:
+		_play_intro()
 
 # ---------- unit buttons ----------
 
@@ -177,7 +214,10 @@ func _process(delta: float) -> void:
 	_tick_income(delta)
 	_tick_queue(delta)
 	_tick_base_heal(delta)
-	_tick_enemy_ai(delta)
+	if GameMode.endless:
+		_tick_endless(delta)
+	else:
+		_tick_enemy_ai(delta)
 	_update_debug()
 
 func _tick_income(delta: float) -> void:
@@ -211,7 +251,7 @@ func _tick_queue(delta: float) -> void:
 	spawn_bar.value = 0.0
 	queue.pop_front()
 	var unit: Node2D = _spawn(info, true, spawn_point)
-	unit.set_stance(defending, defend_point.global_position.x)
+	_apply_stance(unit)
 	unit.died.connect(_on_player_unit_died.bind(info["cost"]))
 	update_ui()
 
@@ -232,6 +272,8 @@ func _apply_stats(unit: Node, info: Dictionary) -> void:
 	unit.speed = info.get("speed", unit.speed)
 
 func _enemy_unlocked(e: Dictionary) -> bool:
+	if GameMode.endless:
+		return wave >= e.get("endless_wave", 1)   # waves unlock enemies
 	return not e.has("unlock_with") or _is_unlocked(e["unlock_with"])
 
 # The enemy pays for units, this is the only place enemy units get bought
@@ -397,7 +439,7 @@ func _on_enemy_died(reward: int) -> void:
 		if PLAYER_UNITS[type].get("unlock_kills", 0) == kills:
 			var msg := "New unit unlocked: %s!" % PLAYER_UNITS[type]["name"]
 			for e in ENEMY_UNITS:
-				if e.get("unlock_with", "") == type:
+				if not GameMode.endless and e.get("unlock_with", "") == type:
 					msg += "\nChristmas answers with: %s!" % e.get("name", "a new unit")
 			_toast(msg)
 			var snd = PLAYER_UNITS[type].get("unlock_sound")
@@ -453,8 +495,14 @@ func _toast(text: String) -> void:
 	tw.tween_callback(l.queue_free)
 
 func update_stats() -> void:
-	stats_label.text = "Time: %s    Kills: %d" % [format_time(elapsed), kills]
-
+	if GameMode.endless:
+		var t := "Wave %d    Time: %s\nKills: %d" % [maxi(wave, 1), format_time(elapsed), kills]
+		if not wave_active:
+			t += "\nNext wave in %ds" % ceili(wave_countdown)
+		stats_label.text = t
+	else:
+		stats_label.text = "Time: %s    Kills: %d" % [format_time(elapsed), kills]
+		
 func format_time(t: float) -> String:
 	return "%02d:%02d" % [floori(t / 60.0), int(t) % 60]
 
@@ -462,6 +510,8 @@ func format_time(t: float) -> String:
 
 func calc_score(won: bool) -> int:
 	var score := kills * KILL_POINTS
+	if GameMode.endless:
+		return score + maxi(wave - 1, 0) * ENDLESS_WAVE_POINTS
 	if won:
 		score += int(maxf(0.0, PAR_TIME - elapsed) * TIME_POINTS_PER_SEC)
 	return score
@@ -476,9 +526,20 @@ func end_game(won: bool) -> void:
 	if game_over:
 		return
 	game_over = true
-	var title := "YOU WIN!" if won else "YOU LOSE"
-	result_label.text = "%s\nTime: %s\nEnemies defeated: %d\nScore: %d" % [
-		title, format_time(elapsed), kills, calc_score(won)]
+	if GameMode.endless:
+		var best_text := ""
+		if wave > GameSettings.best_wave:
+			GameSettings.best_wave = wave
+			GameSettings.save_settings()
+			best_text = "\nNEW BEST!"
+		else:
+			best_text = "\nBest: wave %d" % GameSettings.best_wave
+		result_label.text = "GAME OVER\nReached wave: %d\nTime: %s\nEnemies defeated: %d\nScore: %d%s" % [
+			wave, format_time(elapsed), kills, calc_score(false), best_text]
+	else:
+		var title := "YOU WIN!" if won else "YOU LOSE"
+		result_label.text = "%s\nTime: %s\nEnemies defeated: %d\nScore: %d" % [
+			title, format_time(elapsed), kills, calc_score(won)]
 	result_box.visible = true
 	get_tree().paused = true
 
@@ -490,7 +551,17 @@ func _on_restart_pressed() -> void:
 
 func _set_stance(is_defending: bool) -> void:
 	defending = is_defending
-	get_tree().call_group("player_army", "set_stance", defending, defend_point.global_position.x)
+	for u in get_tree().get_nodes_in_group("player_army"):
+		_apply_stance(u)
+
+# Story: Attack = march on, Defend = hold the defend point.
+# Endless has no enemy base to march to, so both buttons hold a line:
+# Defend = the line near our base, Advance = the forward line.
+func _apply_stance(unit: Node) -> void:
+	if GameMode.endless:
+		unit.set_stance(true, defend_point.global_position.x if defending else ENDLESS_FORWARD_X)
+	else:
+		unit.set_stance(defending, defend_point.global_position.x)
 
 
 func _tick_base_heal(delta: float) -> void:
@@ -513,6 +584,84 @@ func _tick_base_heal(delta: float) -> void:
 		if enemy_heal_timer >= BASE_HEAL_INTERVAL:
 			enemy_heal_timer = 0.0
 			enemy_base.heal(ENEMY_BASE_HEAL_AMOUNT)
+
+# ---------- ENDLESS MODE ----------
+# Each wave gets a budget of points that grows every wave. The AI spends it on enemies that
+# are unlocked for that wave (and counter-picks them like in the story). Enemies also get
+# tougher with every wave. A wave ends when everything is spawned and dead, then there is a short break.
+
+func _tick_endless(delta: float) -> void:
+	if not wave_active:
+		wave_countdown -= delta
+		if wave_countdown <= 0.0:
+			_start_wave()
+		return
+
+	wave_time += delta
+	var alive := get_tree().get_nodes_in_group("enemy_army").size()
+
+	# send the wave out one unit at a time (respecting the alive cap)
+	wave_spawn_timer -= delta
+	if wave_budget > 0.0 and wave_spawn_timer <= 0.0 and alive < AI_MAX_ALIVE:
+		var e := _endless_next_unit()
+		if e.is_empty():
+			wave_budget = 0.0   # nothing affordable is left
+		else:
+			wave_budget -= float(e["cost"])
+			_spawn_enemy(_scaled(e))
+			wave_spawn_timer = ENDLESS_SPAWN_GAP
+			alive += 1
+
+	if wave_budget <= 0.0 and alive == 0:
+		_end_wave()
+	elif wave_time >= ENDLESS_WAVE_MAX_TIME:
+		_start_wave()   # the wave dragged on: the next one comes anyway (leftover budget carries over)
+
+func _start_wave() -> void:
+	wave += 1
+	wave_active = true
+	wave_time = 0.0
+	wave_spawn_timer = 0.0
+	wave_budget += ENDLESS_BUDGET_BASE + ENDLESS_BUDGET_PER_WAVE * (wave - 1)
+	var msg := "Wave %d" % wave
+	for e in ENEMY_UNITS:
+		if wave > 1 and e.get("endless_wave", 1) == wave:
+			msg += "\nNew enemy: %s!" % e.get("name", "???")
+	_toast(msg)
+	update_stats()
+
+func _end_wave() -> void:
+	wave_active = false
+	wave_countdown = ENDLESS_BREAK
+	var bonus := ENDLESS_CLEAR_BONUS + floori(wave / 5.0)
+	money += bonus
+	update_ui()
+	_toast("Wave %d cleared!  +%d gold" % [wave, bonus])
+
+# the counter-picking logic from the story picks what we want, but it has to fit in what is left of the budget
+func _endless_next_unit() -> Dictionary:
+	var pool := ENEMY_UNITS.filter(_enemy_unlocked)
+	var affordable := pool.filter(func(e): return float(e["cost"]) <= wave_budget)
+	if affordable.is_empty():
+		return {}
+	var pick := _pick_enemy()
+	if float(pick["cost"]) <= wave_budget:
+		return pick
+	return affordable.pick_random()
+
+# stronger enemies every wave: more hp, +1 damage every few waves, a little more reward
+func _scaled(entry: Dictionary) -> Dictionary:
+	var e := entry.duplicate()
+	var w := wave - 1
+	e["hp"] = ceili(float(entry["hp"]) * (1.0 + ENDLESS_HP_SCALE * w))
+	e["damage"] = int(entry["damage"]) + floori(w / float(ENDLESS_DAMAGE_EVERY))
+	e["reward"] = int(entry.get("reward", 1)) + floori(w / 4.0)
+	return e
+
+func _play_endless_intro() -> void:
+	GameMode.intro_seen = true
+	await _say(ENDLESS_INTRO)
+	_start_level_music()
 
 # STORY INTRO
 # Pauses the game while a dialogue is open. Reusable for any in-game message.
@@ -575,12 +724,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_F2:   # spawn 5 of our warriors just outside the enemy base range
 			for i in 5:
 				var u := _spawn(PLAYER_UNITS["pumpkin"], true, spawn_point)
-				u.global_position = Vector2(enemy_base.global_position.x - AI_THREAT_RANGE + 100 - i * 30, spawn_point.global_position.y)
+				u.global_position = Vector2((enemy_base.global_position.x if is_instance_valid(enemy_base) else 1600.0) - AI_THREAT_RANGE + 100 - i * 30, spawn_point.global_position.y)
 		KEY_F3:   # +20 gold
 			money += 20
 			update_ui()
 		KEY_F4:   # print map/unit info to the Output panel
 			_print_layout_info()
+		KEY_F5:   # endless: start the next wave right now
+			if GameMode.endless:
+				_start_wave()
 
 func _update_debug() -> void:
 	if not debug_on:

@@ -43,11 +43,11 @@ func _ready() -> void:
 	style.set_content_margin_all(16)
 	_panel.add_theme_stylebox_override("panel", style)
 	add_child(_panel)
-	_panel.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
+	_panel.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	_panel.offset_left = 30
 	_panel.offset_right = -30
-	_panel.offset_top = -210
-	_panel.offset_bottom = -24
+	_panel.offset_top = 24
+	_panel.offset_bottom = 210
 
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 16)

@@ -3,8 +3,9 @@
 [ext_resource type="Script" uid="uid://b22o5d0olbh21" path="res://Scripts/world.gd" id="1_5a7ea"]
 [ext_resource type="Texture2D" uid="uid://b3k5of5sb5deh" path="res://Art/black.png" id="3_5v1tr"]
 [ext_resource type="PackedScene" uid="uid://d1d4ndk8cssu5" path="res://Scenes/enemy_base.tscn" id="4_5ukr8"]
-[ext_resource type="Script" path="res://Scripts/camera_2d.gd" id="4_8j60k"]
+[ext_resource type="Script" uid="uid://pmf611vyxwbx" path="res://Scripts/camera_2d.gd" id="4_8j60k"]
 [ext_resource type="PackedScene" uid="uid://jw6xlnp58amy" path="res://Scenes/base.tscn" id="5_fo5ed"]
+[ext_resource type="PackedScene" uid="uid://bnj2an7v0dbos" path="res://Scenes/settings_panel.tscn" id="6_ikia7"]
 [ext_resource type="Script" uid="uid://cdhb170u57uyt" path="res://Scripts/pause_menu.gd" id="7_o06y3"]
 [ext_resource type="Texture2D" uid="uid://dxojgg11a10lb" path="res://Art/Far_backround.png" id="8_5v1tr"]
 [ext_resource type="Texture2D" uid="uid://7h1w7l2evueg" path="res://Art/Ground_tiles.png" id="8_k7acu"]
@@ -280,24 +281,22 @@ position = Vector2(302, 555)
 [node name="PauseMenu" type="CanvasLayer" parent="." unique_id=141516313]
 process_mode = 3
 layer = 10
-visible = false
 script = ExtResource("7_o06y3")
 
-[node name="ColorRect" type="ColorRect" parent="PauseMenu" unique_id=84483366]
+[node name="ColorRect" type="Panel" parent="PauseMenu" unique_id=1917617935]
 custom_minimum_size = Vector2(500, 400)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -30.0
-offset_top = -31.0
-offset_right = 30.0
-offset_bottom = 31.0
+offset_left = -250.0
+offset_top = -200.0
+offset_right = 250.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.14509805, 0.14509805, 0.15294118, 0.83137256)
 
 [node name="CenterContainer" type="CenterContainer" parent="PauseMenu" unique_id=1371578417]
 custom_minimum_size = Vector2(500, 400)
@@ -313,40 +312,45 @@ offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PauseMenu/CenterContainer" unique_id=1970686480]
+[node name="PauseButtons" type="VBoxContainer" parent="PauseMenu/CenterContainer" unique_id=1970686480]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(450, 300)
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1379967272]
+[node name="Label" type="Label" parent="PauseMenu/CenterContainer/PauseButtons" unique_id=1379967272]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Paused"
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1799959921]
+[node name="ResumeButton" type="Button" parent="PauseMenu/CenterContainer/PauseButtons" unique_id=1799959921]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Resume"
 
-[node name="RestartButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=376844094]
+[node name="RestartButton" type="Button" parent="PauseMenu/CenterContainer/PauseButtons" unique_id=376844094]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Restart"
 
-[node name="MenuButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1405255684]
+[node name="SettingsButton" type="Button" parent="PauseMenu/CenterContainer/PauseButtons" unique_id=1195864973]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Settings"
+
+[node name="MenuButton" type="Button" parent="PauseMenu/CenterContainer/PauseButtons" unique_id=1405255684]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Main Menu"
 
-[node name="QuitButton" type="Button" parent="PauseMenu/CenterContainer/VBoxContainer" unique_id=1412492680]
+[node name="SettingsPanel" parent="PauseMenu" unique_id=582004197 instance=ExtResource("6_ikia7")]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Quit"
+visible = false
 
 [node name="BackLayer" type="Parallax2D" parent="." unique_id=1007564143]
 z_index = -30

@@ -39,6 +39,7 @@ const PUNCH_SOUNDS := [
 @export var shoot_sound: AudioStream 
 @export var defend_engage: float = 180.0   # defenders step out to fight enemies this close (0 = never)
 @export var retreat_distance: float = 150.0   # on Defend, units farther than this from the defend point run home instead of fighting (0 = off)
+@export var sight_range: float = 350.0   # enemies this close make us stop and go fight them (0 = off)
 
 var direction: int = 1
 var facing: int = 1
@@ -59,6 +60,8 @@ var attacking: bool = false
 var attack_hit_done: bool = false
 var attack_target: Node2D = null
 var returning: bool = false
+var sight_target: Node2D = null
+var sight_timer: float = 0.0
 
 @onready var attack_range: Area2D = $AttackRange
 @onready var health_bar: ProgressBar = $HealthBar
@@ -106,6 +109,11 @@ func _physics_process(delta: float) -> void:
 		velocity.y += GRAVITY * delta
 
 	targets = targets.filter(func(t): return is_instance_valid(t))
+	if is_player and sight_range > 0.0:
+		sight_timer -= delta
+		if sight_timer <= 0.0:
+			sight_timer = 0.2
+			sight_target = _find_sight_target()
 
 	var base_dx := INF
 	if is_instance_valid(enemy_base):
@@ -148,6 +156,10 @@ func _physics_process(delta: float) -> void:
 			# otherwise walk to the defend point and wait there
 			velocity.x = signf(home_dx) * speed if absf(home_dx) > 6.0 else 0.0
 		attack_timer = attack_interval
+	elif is_instance_valid(sight_target) and not sight_target.is_dead:
+		# an enemy is close but not in range yet: go and meet it instead of walking past
+		velocity.x = signf(sight_target.global_position.x - global_position.x) * speed
+		attack_timer = minf(attack_timer, 0.25)   # so we strike quickly once it is in range
 	elif near_base and absf(base_dx) <= siege_distance:
 		# in position: attack the base
 		velocity.x = 0.0
@@ -163,6 +175,18 @@ func _physics_process(delta: float) -> void:
 	_update_animation()
 
 # ---------- attacking ----------
+
+func _find_sight_target() -> Node2D:
+	var best: Node2D = null
+	var best_dist := sight_range
+	for e in get_tree().get_nodes_in_group("enemy_army"):
+		if e.is_dead:
+			continue
+		var d := absf(e.global_position.x - global_position.x)
+		if d < best_dist:
+			best_dist = d
+			best = e
+	return best
 
 func _try_attack(delta: float, target: Node2D) -> void:
 	attack_timer -= delta

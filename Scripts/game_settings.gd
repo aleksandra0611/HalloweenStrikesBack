@@ -7,6 +7,7 @@ var music_volume: float = 1.0
 var sfx_volume: float = 1.0
 var fullscreen: bool = false
 var show_damage_numbers: bool = true
+var best_wave: int = 0   # endless mode record
 
 func _ready() -> void:
 	load_settings()
@@ -33,6 +34,7 @@ func save_settings() -> void:
 	cfg.set_value("audio", "sfx", sfx_volume)
 	cfg.set_value("video", "fullscreen", fullscreen)
 	cfg.set_value("game", "damage_numbers", show_damage_numbers)
+	cfg.set_value("endless", "best_wave", best_wave)
 	cfg.save(PATH)
 
 func load_settings() -> void:
@@ -44,3 +46,4 @@ func load_settings() -> void:
 	sfx_volume = cfg.get_value("audio", "sfx", 1.0)
 	fullscreen = cfg.get_value("video", "fullscreen", false)
 	show_damage_numbers = cfg.get_value("game", "damage_numbers", true)
+	best_wave = cfg.get_value("endless", "best_wave", 0)

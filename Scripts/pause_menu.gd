@@ -2,20 +2,27 @@ extends CanvasLayer
 
 @onready var resume_button: Button = %ResumeButton
 @onready var restart_button: Button = %RestartButton
-@onready var quit_button: Button = %QuitButton
 @onready var menu_button: Button = %MenuButton
+@onready var settings_button: Button = %SettingsButton
+@onready var settings_panel: PanelContainer = %SettingsPanel
+@onready var pause_buttons: Control = %PauseButtons
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
+	settings_panel.visible = false
+	settings_button.pressed.connect(_open_settings)
+	settings_panel.closed.connect(_close_settings)
 	resume_button.pressed.connect(_resume)
 	restart_button.pressed.connect(_restart)
 	menu_button.pressed.connect(_to_menu)
-	quit_button.pressed.connect(func(): get_tree().quit())
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		toggle()
+		if settings_panel.visible:
+			settings_panel.close()
+		else:
+			toggle()
 		get_viewport().set_input_as_handled()
 
 func toggle() -> void:
@@ -30,7 +37,16 @@ func _pause() -> void:
 	visible = true
 	get_tree().paused = true
 
+func _open_settings() -> void:
+	pause_buttons.visible = false
+	settings_panel.visible = true
+
+func _close_settings() -> void:
+	settings_panel.visible = false
+	pause_buttons.visible = true
+
 func _resume() -> void:
+	_close_settings()
 	visible = false
 	get_tree().paused = false
 
