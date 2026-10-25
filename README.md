@@ -9,8 +9,9 @@
 
 1. Prenesite celotno mapo `Release/`.
 2. Če je prenesena kot ZIP, jo najprej razpakirajte.
-3. Zaženite `Halloween strikes back.exe`.
-4. Če Windows prikaže opozorilo SmartScreen ("neznani založnik"), kliknite **Več informacij > Vseeno zaženi**.
+3. V mapi razširite oz. razpakirajte še priloženi ZIP arhiv, v katerem se nahaja `Halloween strikes back.exe` 
+4. Zaženite `Halloween strikes back.exe`.
+5. Če Windows prikaže opozorilo SmartScreen ("neznani založnik"), kliknite **Več informacij > Vseeno zaženi**.
 
 
 ### Zagon iz izvorne kode
@@ -51,7 +52,7 @@
 - **Video predstavitve:** *(vstavi povezavo)*
 
 ## Ekipa
-Aleksandra Mickoska
+Aleksandra Mickoska, 
 Daniel Adamcheski
 
 ## Tehnologija
