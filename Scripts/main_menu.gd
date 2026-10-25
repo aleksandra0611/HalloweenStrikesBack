@@ -29,10 +29,14 @@ func _close_settings() -> void:
 
 func _start_story() -> void:
 	GameMode.endless = false
+	GameMode.level = 1
+	GameMode.carry_unlocked = {}
 	GameMode.intro_seen = false
 	get_tree().change_scene_to_file(WORLD_SCENE)
 
 func _start_endless() -> void:
 	GameMode.endless = true
+	GameMode.level = 1
+	GameMode.carry_unlocked = {}
 	GameMode.intro_seen = false
 	get_tree().change_scene_to_file(WORLD_SCENE)

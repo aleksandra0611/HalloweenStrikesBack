@@ -1,0 +1,125 @@
+[gd_scene format=3 uid="uid://chcam5c5idonu"]
+
+[ext_resource type="Script" uid="uid://cvfvfkav08osv" path="res://Scripts/unit.gd" id="1_y6kvq"]
+[ext_resource type="Texture2D" uid="uid://bjcmfilxagpv6" path="res://Art/ginger_man_attack1.png" id="2_8nej4"]
+[ext_resource type="Texture2D" uid="uid://l2hdkar78a0u" path="res://Art/ginger_man_attack2.png" id="3_5w2lw"]
+[ext_resource type="Texture2D" uid="uid://dwkm3ex0xlx51" path="res://Art/ginger_man_idle.png" id="4_kta0e"]
+[ext_resource type="Texture2D" uid="uid://c44ckrsdtyydl" path="res://Art/ginger_man_walking.png" id="5_mo07e"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
+size = Vector2(53, 148)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1f0kj"]
+radius = 86.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
+bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_np7o7"]
+atlas = ExtResource("2_8nej4")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xxyuv"]
+atlas = ExtResource("3_5w2lw")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vgu06"]
+atlas = ExtResource("4_kta0e")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uqsss"]
+atlas = ExtResource("4_kta0e")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h3j4a"]
+atlas = ExtResource("5_mo07e")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f23wm"]
+atlas = ExtResource("5_mo07e")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4v3hb"]
+atlas = ExtResource("5_mo07e")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y57m3"]
+atlas = ExtResource("5_mo07e")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8cim4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_np7o7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xxyuv")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vgu06")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uqsss")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h3j4a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f23wm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4v3hb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y57m3")
+}],
+"loop": true,
+"name": &"run",
+"speed": 4.0
+}]
+
+[node name="gingerbread_man" type="CharacterBody2D" unique_id=246681695]
+collision_layer = 4
+collision_mask = 5
+script = ExtResource("1_y6kvq")
+is_player = false
+damage = 1
+hit_frame = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1282862807]
+position = Vector2(0.5, 5)
+shape = SubResource("RectangleShape2D_1f0kj")
+
+[node name="AttackRange" type="Area2D" parent="." unique_id=1315047935]
+collision_layer = 0
+collision_mask = 10
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttackRange" unique_id=11460576]
+shape = SubResource("CircleShape2D_1f0kj")
+
+[node name="HealthBar" type="ProgressBar" parent="." unique_id=317793147]
+custom_minimum_size = Vector2(40, 6)
+offset_left = -33.0
+offset_top = -90.0
+offset_right = 33.0
+offset_bottom = -78.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_1f0kj")
+show_percentage = false
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=590899447]
+position = Vector2(-4.7683716e-07, -4.7683716e-07)
+scale = Vector2(3.0770655, 3.1043828)
+sprite_frames = SubResource("SpriteFrames_8cim4")
+animation = &"run"
+frame_progress = 0.73221767

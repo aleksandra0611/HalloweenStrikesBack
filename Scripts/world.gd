@@ -14,7 +14,7 @@ const PLAYER_UNITS := {
 		"unlock_kills": 10, "unlock_sound": preload("res://Audio/pumpkin_unlock_sound.mp3"),
 		"hp": 5, "damage": 2, "interval": 1.0, "speed": 100.0},      # strong all-round bruiser
 	"skeleton": {"name": "Skeleton", "cost": 8, "scene": preload("res://Scenes/skeleton.tscn"), "train_time": 4.0,
-		"unlock_kills": 20, "unlock_sound": preload("res://Audio/skeleton_unlock_sound.mp3"),   
+		"unlock_kills": 15, "unlock_sound": preload("res://Audio/skeleton_unlock_sound.mp3"),   
 		"hp": 12, "damage": 2, "interval": 1.2, "speed": 60.0},      # slow, tough tank
 }
 
@@ -31,6 +31,8 @@ const ENEMY_UNITS := [
 		"endless_wave": 1, "hp": 2, "damage": 1, "interval": 0.6, "speed": 100.0},      # fast and fragile
 	{"name": "Snowman", "scene": preload("res://Scenes/snowman.tscn"), "cost": 3, "weight": 2, "reward": 2, "ranged": true,
 		"unlock_with": "pumpkin", "endless_wave": 5, "hp": 3, "damage": 1, "interval": 1.1, "speed": 90.0},       # snowball thrower
+		{"name": "Gingerbread", "scene": preload("res://Scenes/gingerbread_man.tscn"), "cost": 5, "weight": 2, "reward": 3, "ranged": false,
+		"unlock_with": "skeleton", "endless_wave": 8, "hp": 9, "damage": 4, "interval": 1.5, "speed": 63.0},       # tough melee bruiser
 	]
 
 const StoryDialogue = preload("res://Scripts/story_dialogue.gd")
@@ -53,7 +55,28 @@ const ENDLESS_INTRO := [
 	{"speaker": "Jack", "text": "Defend holds the line near our base and heals it. Advance moves the army out to meet them. Scroll the map with A and D.", "portrait":"res://Art/jack.png" },
 	{"speaker": "Jack", "text": "Between waves you get a short break and bonus gold. How many waves can we survive? Go, my minions!", "portrait":"res://Art/jack.png" },
 ]
+const LEVEL2_PART_1 := [
+	{"speaker": "Jack", "text": "Their forward camp is gone, but look! Christmas has a fortress deeper in the snow.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "And this time they know we're coming.", "portrait":"res://Art/jack.png" },
+]
+const LEVEL2_PART_2 := [
+	{"speaker": "Jack", "text": "My minions will have to earn their place again. Bats and ghosts first, then the stronger ones!", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Tear that fortress down, and let's finish this once and for all!", "portrait":"res://Art/jack.png" },
+]
+const ENDING := [
+	{"speaker": "Jack", "text": "Their fortress is nothing but snow and splinters now. The tinsel is ash.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "They called us a spooky little holiday. Said we should stay in our corner of the calendar.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Christmas can have its December. All we ask is that it waits its turn.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Now the night belongs to us again.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "...Though I'd sleep with one eye open. Something tells me they'll be back next October.", "portrait":"res://Art/jack.png" },
+	{"speaker": "Jack", "text": "Happy Halloween!", "portrait":"res://Art/jack.png" },
+]
 
+const STORY_INTROS := [
+	[INTRO_PART_1, INTRO_PART_2],
+	[LEVEL2_PART_1, LEVEL2_PART_2],
+]
+const LEVEL_ENEMY_INCOME := [1.0, 1.4]   # enemy income multiplier per level (level 2 = 40% harder)
 # ENEMY AI
 const AI_THREAT_RANGE := 650.0        # our units this close to their base = base under attack
 const AI_RECALL_RANGE := 600.0        # enemy units this close to their base get pulled back to defend
@@ -64,6 +87,7 @@ const AI_ALARM_UNITS := 2             # how many extra units spawn instantly
 const AI_ALARM_COOLDOWN := 25.0       # seconds between emergency reinforcements
 const AI_MAX_RANGED_SHARE := 0.5      # AI won't build an army that's more than 50% ranged
 const AI_SORTIE_RANGE := 330.0        # defenders charge out at one of our ranged units this close (archers outrange melee)
+const LEVEL_ENEMY_ATTACK_SPEED := [1.0, 1.3]   # enemy attack speed multiplier per level (1.3 = 30% faster hits)
 # enemy economy: they pay for every unit, just like you
 const AI_START_GOLD := 5.0
 const AI_INCOME_PER_SEC := 0.12        # passive gold per second 
@@ -133,6 +157,7 @@ var wave_budget: float = 0.0
 var wave_time: float = 0.0
 var wave_spawn_timer: float = 0.0
 var wave_countdown: float = ENDLESS_FIRST_DELAY
+var enemy_income: float = AI_INCOME_PER_SEC
 
 @onready var unit_row: Container = $CanvasLayer/VBoxContainer/HBoxContainer
 @onready var spawn_bar: ProgressBar = $CanvasLayer/VBoxContainer/SpawnBar
@@ -147,17 +172,24 @@ var wave_countdown: float = ENDLESS_FIRST_DELAY
 @onready var result_box: PanelContainer = $CanvasLayer/ResultBox
 @onready var result_label: Label = $CanvasLayer/ResultBox/VBoxContainer/ResultLabel
 @onready var restart_button: Button = $CanvasLayer/ResultBox/VBoxContainer/RestartButton
+@onready var menu_button: Button = $CanvasLayer/ResultBox/VBoxContainer/MenuButton
 @onready var attack_button: Button = %AttackButton
 @onready var defend_button: Button = %DefendButton
 @onready var defend_point: Marker2D = $DefendPoint
 @onready var level_music: AudioStreamPlayer2D = $LevelMusic
+@onready var next_button: Button = $CanvasLayer/ResultBox/VBoxContainer/NextLevelButton
+
+@export var level_number: int = 1
 
 func _ready() -> void:
+	if not GameMode.endless:
+		GameMode.level = level_number
 	$CanvasLayer/PauseButton.pressed.connect($PauseMenu.toggle)
 	_build_unit_buttons()
 	_setup_debug()
 	enemy_timer.stop()  
 	restart_button.pressed.connect(_on_restart_pressed)
+	menu_button.pressed.connect(_on_menu_pressed)
 	player_base.destroyed.connect(_on_player_base_destroyed)
 	if GameMode.endless:
 		enemy_base.queue_free()   # no enemy base in endless mode
@@ -180,7 +212,11 @@ func _ready() -> void:
 		defending = true
 		attack_button.text = "Advance"        # no enemy base, so Attack becomes "hold a forward line"
 		money = ENDLESS_START_GOLD
-
+	
+	if not GameMode.endless:
+		enemy_income = AI_INCOME_PER_SEC * LEVEL_ENEMY_INCOME[GameMode.level - 1]
+	next_button.visible = false
+	next_button.pressed.connect(_on_next_level_pressed)
 	update_ui()
 	update_stats()
 	story = StoryDialogue.new()
@@ -270,6 +306,8 @@ func _apply_stats(unit: Node, info: Dictionary) -> void:
 	unit.damage = info.get("damage", unit.damage)
 	unit.attack_interval = info.get("interval", unit.attack_interval)
 	unit.speed = info.get("speed", unit.speed)
+	if not unit.is_player and not GameMode.endless:
+		unit.attack_interval /= LEVEL_ENEMY_ATTACK_SPEED[GameMode.level - 1]
 
 func _enemy_unlocked(e: Dictionary) -> bool:
 	if GameMode.endless:
@@ -317,7 +355,7 @@ func _enemy_defend_x() -> float:
 	return enemy_base.global_position.x - AI_DEFEND_OFFSET
 
 func _tick_enemy_ai(delta: float) -> void:
-	enemy_gold = minf(enemy_gold + AI_INCOME_PER_SEC * delta, AI_GOLD_CAP)
+	enemy_gold = minf(enemy_gold + enemy_income * delta, AI_GOLD_CAP)
 	buy_cooldown = maxf(0.0, buy_cooldown - delta)
 	alarm_cooldown = maxf(0.0, alarm_cooldown - delta)
 	ai_think_timer -= delta
@@ -537,9 +575,15 @@ func end_game(won: bool) -> void:
 		result_label.text = "GAME OVER\nReached wave: %d\nTime: %s\nEnemies defeated: %d\nScore: %d%s" % [
 			wave, format_time(elapsed), kills, calc_score(false), best_text]
 	else:
-		var title := "YOU WIN!" if won else "YOU LOSE"
+		if won and not GameMode.has_next_level():
+			story.skip_all = false
+			create_tween().tween_property(level_music, "volume_db", -40.0, 3.0)
+			await get_tree().create_timer(1.5).timeout
+			await _say(ENDING)
+		var title := ("LEVEL COMPLETE!" if GameMode.has_next_level() else "YOU WIN!") if won else "YOU LOSE"
 		result_label.text = "%s\nTime: %s\nEnemies defeated: %d\nScore: %d" % [
 			title, format_time(elapsed), kills, calc_score(won)]
+	next_button.visible = won and not GameMode.endless and GameMode.has_next_level()
 	result_box.visible = true
 	get_tree().paused = true
 
@@ -547,6 +591,16 @@ func _on_restart_pressed() -> void:
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 
+func _on_menu_pressed() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://Scenes/main_menu.tscn")
+	
+func _on_next_level_pressed() -> void:
+	GameMode.level += 1
+	GameMode.intro_seen = false
+	get_tree().paused = false
+	get_tree().change_scene_to_file(GameMode.scene_for_level())
+	
 # ---------- stance ----------
 
 func _set_stance(is_defending: bool) -> void:
@@ -681,7 +735,8 @@ func _play_intro() -> void:
 		# start by looking at the Christmas base
 		cam.position.x = cam.limit_right - get_viewport_rect().size.x * 0.5 / cam.zoom.x
 
-	await _say(INTRO_PART_1)
+	var intro: Array = STORY_INTROS[GameMode.level - 1]
+	await _say(intro[0])
 
 	if cam:
 		if story.skip_all:
@@ -692,7 +747,7 @@ func _play_intro() -> void:
 				.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 			await tw.finished
 
-	await _say(INTRO_PART_2)
+	await _say(intro[1])
 	get_tree().paused = false
 	_start_level_music()
 
@@ -740,7 +795,7 @@ func _update_debug() -> void:
 	debug_label.text = "Threatened: %s\nAttackers near base: %d\nEnemies alive: %d / %d\nEnemy gold: %.1f / %.0f (income %.2f/s)\nSaving for: %s (cost %s)\nBuy cooldown: %.1fs   Alarm cooldown: %.1fs" % [
 		enemy_threatened, _count_player_near_base(AI_THREAT_RANGE),
 		get_tree().get_nodes_in_group("enemy_army").size(), AI_MAX_ALIVE,
-		enemy_gold, AI_GOLD_CAP, AI_INCOME_PER_SEC,
+		enemy_gold, AI_GOLD_CAP, enemy_income,
 		ai_plan.get("name", "-"), ai_plan.get("cost", "-"),
 		buy_cooldown, alarm_cooldown]
 	queue_redraw()

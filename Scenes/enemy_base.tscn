@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://506jjwfnbund" path="res://Art/monument2.png" id="2_cs1oe"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cs1oe"]
-size = Vector2(201, 91)
+size = Vector2(201, 459)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jd0l4"]
 bg_color = Color(0.7389777, 0.07526701, 1.92523e-07, 1)
@@ -14,7 +14,7 @@ script = ExtResource("1_cs1oe")
 is_player_base = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=247468650]
-position = Vector2(-3.5, -53.5)
+position = Vector2(-3.5, -154.5)
 shape = SubResource("RectangleShape2D_cs1oe")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=83948480]
